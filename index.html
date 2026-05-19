@@ -131,36 +131,38 @@ body{
 
 @media print{
 
+    html,
     body{
-        background:white;
+        width:58mm;
         margin:0;
         padding:0;
+    }
+
+    body{
+        background:white;
     }
 
     .form-box{
         display:none;
     }
 
+    .container{
+        display:block;
+    }
+
     .receipt{
-
-        width:48mm;
-
-        padding:
-            5px
-            4px
-            25px;
-
-        font-size:10px;
-        line-height:1.2;
+        width:58mm;
+        padding:5px;
+        margin:0;
+        box-sizing:border-box;
     }
 
     @page{
-        size:58mm auto;
+        size:58mm;
         margin:0;
     }
 
 }
-
 </style>
 </head>
 <body>
