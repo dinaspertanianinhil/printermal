@@ -3,504 +3,540 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editor Nota SPBU Pertamina</title>
+
+<title>Thermal SPBU</title>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap');
 
-  :root {
-    --red: #e8202a;
-    --dark: #1a1a1a;
-    --mid: #3a3a3a;
-    --light: #f5f5f0;
-    --border: #d0d0c8;
-    --accent: #ff6b35;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'Syne', sans-serif;
-  }
+body{
+    margin:0;
+    padding:20px;
+    background:#dcdcdc;
+    font-family:"Courier New", monospace;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+.container{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+}
 
-  body {
-    background: var(--light);
-    font-family: var(--sans);
-    min-height: 100vh;
-    color: var(--dark);
-  }
+/* =========================
+   FORM
+========================= */
 
-  header {
-    background: var(--dark);
-    color: white;
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    border-bottom: 3px solid var(--red);
-  }
+.form-box{
+    width:320px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
 
-  .logo-box {
-    background: var(--red);
-    width: 40px; height: 40px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 18px; color: white;
-    clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 15% 100%, 0 85%);
-  }
+.form-box h2{
+    margin-top:0;
+    margin-bottom:20px;
+}
 
-  header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-  header span { font-size: 12px; color: #888; font-family: var(--mono); }
+.form-box input{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+    box-sizing:border-box;
+    font-family:inherit;
+}
 
-  .main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    min-height: calc(100vh - 67px);
-  }
+.form-box button{
+    width:100%;
+    padding:10px;
+    border:none;
+    background:black;
+    color:white;
+    cursor:pointer;
+    border-radius:5px;
+    margin-top:5px;
+    font-family:inherit;
+    font-weight:bold;
+}
 
-  /* ── LEFT PANEL ── */
-  .editor {
-    background: white;
-    border-right: 2px solid var(--border);
-    padding: 28px;
-    overflow-y: auto;
-  }
+/* =========================
+   RECEIPT THERMAL
+========================= */
 
-  .editor h2 {
-    font-size: 13px; font-weight: 700; letter-spacing: 2px;
-    color: var(--red); text-transform: uppercase;
-    margin-bottom: 20px; padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
+.receipt{
+    width:48mm;
+    background:white;
 
-  .section-label {
-    font-size: 10px; font-weight: 700; color: #999;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin: 20px 0 10px;
-  }
+    padding:
+        6px
+        5px
+        28px;
 
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
+    color:black;
 
-  .field-single { margin-bottom: 10px; }
+    font-size:10px;
+    line-height:1.25;
 
-  label {
-    display: block;
-    font-size: 11px; font-weight: 700; color: var(--mid);
-    letter-spacing: 0.5px; margin-bottom: 4px;
-    font-family: var(--mono);
-  }
+    overflow:hidden;
+    word-break:break-word;
 
-  input, select {
-    width: 100%;
-    padding: 9px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--dark);
-    background: var(--light);
-    transition: border-color 0.2s, background 0.2s;
-    outline: none;
-  }
+    letter-spacing:-0.2px;
+}
 
-  input:focus, select:focus {
-    border-color: var(--red);
-    background: white;
-  }
+.center{
+    text-align:center;
+}
 
-  input[readonly] {
-    background: #eee;
-    color: #555;
-    cursor: not-allowed;
-  }
+.space{
+    height:8px;
+}
 
-  .btn-print {
-    margin-top: 24px;
-    width: 100%;
-    padding: 14px;
-    background: var(--red);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: background 0.2s, transform 0.1s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
+.bold{
+    font-weight:bold;
+}
 
-  .btn-print:hover { background: #c0151e; }
-  .btn-print:active { transform: scale(0.98); }
+.logo img{
+    width:78px;
+    margin-bottom:2px;
+}
 
-  .btn-reset {
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px;
-    background: transparent;
-    color: var(--mid);
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
+/* =========================
+   BARIS
+========================= */
 
-  .btn-reset:hover { border-color: var(--mid); color: var(--dark); }
+.line{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:4px;
+}
 
-  /* ── RIGHT PANEL ── */
-  .preview-panel {
-    background: #888 url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23777'/%3E%3C/svg%3E") repeat;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 20px;
-    min-height: 100%;
-  }
+/* LABEL */
 
-  .preview-label {
-    font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5);
-    letter-spacing: 2px; text-transform: uppercase;
-    margin-bottom: 20px; font-family: var(--mono);
-  }
+.label{
+    display:inline-block;
+    width:78px;
+}
 
-  /* ── THERMAL RECEIPT ── */
-  .receipt {
-    width: 280px;
-    background: white;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 12px;
-    color: #111;
-    padding: 16px 14px 24px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-    position: relative;
-    line-height: 1.55;
-  }
+/* KANAN */
 
-  /* Torn top & bottom */
-  .receipt::before, .receipt::after {
-    content: '';
-    display: block;
-    height: 8px;
-    background:
-      radial-gradient(circle at 8px -3px, transparent 5px, #888 5px, #888 6px, transparent 6px) repeat-x,
-      radial-gradient(circle at 8px 11px, transparent 5px, white 5px) repeat-x;
-    background-size: 16px 8px;
-    position: absolute;
-    left: 0; right: 0;
-  }
-  .receipt::before { top: -8px; }
-  .receipt::after { bottom: -8px; transform: rotate(180deg); }
+.right{
+    text-align:right;
+    white-space:nowrap;
+}
 
-  .receipt-header { text-align: center; margin-bottom: 10px; }
+/* =========================
+   PRINT
+========================= */
 
-  .receipt-logo {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    margin-bottom: 2px;
-  }
+@media print{
 
-  .receipt-logo-icon {
-    width: 22px; height: 22px;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .receipt-logo-icon svg { width: 22px; height: 22px; }
-
-  .receipt-brand { font-weight: 700; font-size: 14px; letter-spacing: 1px; }
-
-  .receipt-spbu-id { font-size: 11px; }
-
-  .receipt-divider {
-    border: none;
-    border-top: 1px dashed #aaa;
-    margin: 6px 0;
-  }
-
-  .receipt-row { display: flex; justify-content: space-between; font-size: 11.5px; }
-  .receipt-row .lbl { flex-shrink: 0; }
-  .receipt-row .val { text-align: right; font-weight: 600; }
-
-  .receipt-section { margin: 6px 0; }
-
-  .receipt-total-row {
-    display: flex; justify-content: space-between;
-    font-size: 13px; font-weight: 700;
-    border-top: 1px dashed #aaa;
-    border-bottom: 1px dashed #aaa;
-    padding: 5px 0; margin: 8px 0;
-  }
-
-  .receipt-cash { text-align: right; font-size: 12px; margin: 4px 0 8px; }
-
-  .receipt-plat { margin-top: 8px; font-size: 11.5px; }
-
-  /* ── PRINT STYLES ── */
-  @media print {
-    @page { size: 80mm auto; margin: 0; }
-
-    body * { visibility: hidden !important; }
-    .receipt-print-area, .receipt-print-area * { visibility: visible !important; }
-    .receipt-print-area {
-      position: fixed !important;
-      top: 0 !important; left: 0 !important;
-      width: 72mm !important;
-      background: white !important;
-      padding: 4mm 4mm 10mm !important;
-      box-shadow: none !important;
-      font-family: 'Courier New', Courier, monospace !important;
-      font-size: 11px !important;
-      color: black !important;
+    body{
+        background:white;
+        margin:0;
+        padding:0;
     }
-    .receipt-print-area::before,
-    .receipt-print-area::after { display: none !important; }
-  }
+
+    .form-box{
+        display:none;
+    }
+
+    .receipt{
+
+        width:48mm;
+
+        padding:
+            5px
+            4px
+            25px;
+
+        font-size:10px;
+        line-height:1.2;
+    }
+
+    @page{
+        size:58mm auto;
+        margin:0;
+    }
+
+}
+
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-box">P</div>
-  <div>
-    <h1>Editor Nota SPBU</h1>
-    <span>Pertamina — Thermal Receipt Builder</span>
-  </div>
-</header>
+<div class="container">
 
-<div class="main">
+    <!-- =========================
+         FORM INPUT
+    ========================== -->
 
-  <!-- ═══ LEFT: EDITOR ═══ -->
-  <div class="editor">
-    <h2>✏ Isi Data Nota</h2>
+    <div class="form-box">
 
-    <div class="section-label">Info SPBU</div>
-    <div class="field-single">
-      <label>Nama / Kode SPBU</label>
-      <input type="text" id="spbu_id" value="13292630" oninput="update()">
-    </div>
-    <div class="field-single">
-      <label>No. SPBU</label>
-      <input type="text" id="spbu_no" value="13232530" oninput="update()">
-    </div>
-    <div class="field-single">
-      <label>Alamat</label>
-      <input type="text" id="alamat" value="Tempuling, Kec Tempuling Riau" oninput="update()">
-    </div>
-    <div class="field-single">
-      <label>Telepon</label>
-      <input type="text" id="telp" value="+6261 4552422" oninput="update()">
-    </div>
+        <h2>INPUT NOTA SPBU</h2>
 
-    <div class="section-label">Info Transaksi</div>
-    <div class="field-row">
-      <div>
-        <label>Shift</label>
-        <select id="shift" oninput="update()">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-        </select>
-      </div>
-      <div>
-        <label>No. Transaksi</label>
-        <input type="text" id="no_trans" value="1324747" oninput="update()">
-      </div>
-    </div>
-    <div class="field-single">
-      <label>Waktu (Tanggal & Jam)</label>
-      <input type="datetime-local" id="waktu" oninput="update()">
-    </div>
+        <input type="text"
+               id="shift"
+               placeholder="Shift">
 
-    <div class="section-label">Detail Pengisian</div>
-    <div class="field-row">
-      <div>
-        <label>Pulau / Pompa</label>
-        <input type="number" id="pulau" value="1" min="1" oninput="update()">
-      </div>
-      <div>
-        <label>Nama Produk</label>
-        <select id="produk" oninput="update()">
-          <option value="PERTAMINA_DEX">PERTAMINA DEX</option>
-          <option value="PERTALITE">PERTALITE</option>
-          <option value="PERTAMAX">PERTAMAX</option>
-          <option value="PERTAMAX_TURBO">PERTAMAX TURBO</option>
-          <option value="SOLAR">SOLAR</option>
-          <option value="DEXLITE">DEXLITE</option>
-        </select>
-      </div>
-    </div>
-    <div class="field-row">
-      <div>
-        <label>Harga / Liter (Rp)</label>
-        <input type="number" id="harga" value="29100" step="100" oninput="update()">
-      </div>
-      <div>
-        <label>Volume (Liter)</label>
-        <input type="number" id="volume" value="34.39" step="0.01" oninput="update()">
-      </div>
-    </div>
-    <div class="field-single">
-      <label>Total Harga (otomatis)</label>
-      <input type="text" id="total_display" readonly>
+        <input type="text"
+               id="trans"
+               placeholder="No Transaksi">
+
+        <input type="datetime-local"
+               id="waktu">
+
+        <input type="text"
+               id="pulau"
+               placeholder="Pulau / Pompa">
+
+        <input type="text"
+               id="produk"
+               placeholder="Nama Produk">
+
+        <input type="number"
+               id="harga"
+               placeholder="Harga per Liter">
+
+        <input type="number"
+               step="0.01"
+               id="volume"
+               placeholder="Volume">
+
+        <input type="text"
+               id="operator"
+               placeholder="Operator">
+
+        <input type="text"
+               id="plat"
+               placeholder="No Plat">
+
+        <button onclick="generateNota()">
+            GENERATE NOTA
+        </button>
+
+        <button onclick="window.print()">
+            PRINT
+        </button>
+
     </div>
 
-    <div class="section-label">Operator & Kendaraan</div>
-    <div class="field-single">
-      <label>Operator</label>
-      <input type="text" id="operator" value="RAFLYATULLAH" oninput="update()">
-    </div>
-    <div class="field-single">
-      <label>No. Plat</label>
-      <input type="text" id="no_plat" value="BM1084G" oninput="update()" style="text-transform:uppercase">
-    </div>
+    <!-- =========================
+         RECEIPT
+    ========================== -->
 
-    <button class="btn-print" onclick="printReceipt()">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-6 0H8v4h8v-4z"/></svg>
-      Print Thermal
-    </button>
-    <button class="btn-reset" onclick="resetForm()">↺ Reset Default</button>
-  </div>
+    <div class="receipt">
 
-  <!-- ═══ RIGHT: PREVIEW ═══ -->
-  <div class="preview-panel">
-    <div class="preview-label">▶ Preview Nota</div>
+        <!-- LOGO -->
 
-    <div class="receipt receipt-print-area" id="receipt">
-
-      <!-- HEADER -->
-      <div class="receipt-header">
-        <div class="receipt-logo">
-          <div class="receipt-logo-icon">
-            <!-- Pertamina-style flame icon -->
-            <svg viewBox="0 0 24 24" fill="#e8202a" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 2C13 2 8 7 8 12C8 15.3 10.1 17.9 13 18.9C11.3 17.6 10.5 15.8 10.5 14C10.5 11 13 8.5 13 8.5C13 8.5 15.5 11 15.5 14C15.5 15.8 14.7 17.6 13 18.9C15.9 17.9 18 15.3 18 12C18 7 13 2 13 2Z"/>
-              <path d="M13 20C13 20 10 19 10 16C10 14.5 11.5 13 13 13C14.5 13 16 14.5 16 16C16 19 13 20 13 20Z" fill="#1a1a1a"/>
-            </svg>
-          </div>
-          <span class="receipt-brand">PERTAMINA</span>
+        <div class="center logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgIKihJed_teJrbbeqUzgYh-9dNXDQBeQ3yA&s">
         </div>
-        <div class="receipt-spbu-id" id="r_spbu_id">13292630</div>
-        <div style="font-size:11px">SPBU <span id="r_spbu_no">13232530</span></div>
-        <div style="font-size:10.5px" id="r_alamat">Tempuling, Kec Tempuling Riau</div>
-        <div style="font-size:10.5px">Telp. <span id="r_telp">+6261 4552422</span></div>
-      </div>
 
-      <hr class="receipt-divider">
-
-      <div class="receipt-section">
-        <div class="receipt-row">
-          <span class="lbl">Shift: <span id="r_shift">1</span></span>
-          <span class="val">No. Trans: <span id="r_no_trans">1324747</span></span>
+        <div class="center" style="font-size:13px;">
+            13292630
         </div>
-        <div style="font-size:11px">Waktu: <span id="r_waktu">06/05/2026 10:50:17</span></div>
-      </div>
 
-      <hr class="receipt-divider">
+        <div class="center" style="font-size:13px;">
+            SPBU 13292630
+        </div>
 
-      <div class="receipt-section">
-        <div style="font-size:11px">Pulau/Pompa: <span id="r_pulau">1</span></div>
-        <div style="font-size:11px">Nama Produk: <span id="r_produk">PERTAMINA_DEX</span></div>
-        <div style="font-size:11px">Harga/Liter: Rp. <span id="r_harga">29,100</span></div>
-        <div style="font-size:11px">Volume &nbsp;&nbsp;&nbsp;: (L) <span id="r_volume">34.39</span></div>
-        <div style="font-size:11px">Total Harga: Rp. <span id="r_total">1,000,749</span></div>
-        <div style="font-size:11px">Operator &nbsp;: <span id="r_operator">RAFLYATULLAH</span></div>
-      </div>
+        <div class="center">
+            Tempuling, Kec Tempuling Riau
+        </div>
 
-      <hr class="receipt-divider">
+        <div class="center">
+            Telp. +6261 4552422
+        </div>
 
-      <div style="font-size:11.5px; font-weight:600;">CASH</div>
-      <div class="receipt-cash">
-        <span id="r_cash">1,000,749</span>
-      </div>
+        <div class="space"></div>
 
-      <hr class="receipt-divider">
+        <!-- SHIFT -->
 
-      <div class="receipt-plat">No. Plat : <strong id="r_plat">BM1084G</strong></div>
+        <div class="line">
+
+            <div>
+                Shift:
+                <span id="r_shift">1</span>
+            </div>
+
+            <div>
+                No. Trans:
+                <span id="r_trans">1324747</span>
+            </div>
+
+        </div>
+
+        <!-- WAKTU -->
+
+        <div>
+            Waktu:
+            <span id="r_waktu">
+                06/05/2026 10:50:17
+            </span>
+        </div>
+
+        <div class="space"></div>
+
+        <!-- DATA -->
+
+        <div>
+            <span class="label">
+                Pulau/Pompa
+            </span>:
+            <span id="r_pulau">1</span>
+        </div>
+
+        <div>
+            <span class="label">
+                Nama Produk
+            </span>:
+            <span id="r_produk">
+                PERTAMINA_DEX
+            </span>
+        </div>
+
+        <div>
+            <span class="label">
+                Harga/Liter
+            </span>:
+            Rp.
+            <span id="r_harga">
+                29,100
+            </span>
+        </div>
+
+        <div>
+            <span class="label">
+                Volume
+            </span>:
+            (L)
+            <span id="r_volume">
+                34.39
+            </span>
+        </div>
+
+        <!-- TOTAL -->
+
+        <div class="line">
+
+            <div>
+                <span class="label">
+                    Total Harga
+                </span>:
+            </div>
+
+            <div class="right">
+                Rp.
+                <span id="r_total">
+                    1,000,749
+                </span>
+            </div>
+
+        </div>
+
+        <div>
+            <span class="label">
+                Operator
+            </span>:
+            <span id="r_operator">
+                RAFLYATULLAH
+            </span>
+        </div>
+
+        <!-- JARAK CASH -->
+
+        <div style="height:18px;"></div>
+
+        <!-- CASH -->
+
+        <div class="line bold">
+
+            <span>
+                CASH
+            </span>
+
+            <span id="r_cash">
+                1,000,749
+            </span>
+
+        </div>
+
+        <!-- JARAK PLAT -->
+
+        <div style="height:28px;"></div>
+
+        <!-- PLAT -->
+
+        <div>
+            <span class="label">
+                No. Plat
+            </span>:
+            <span id="r_plat">
+                BM1084G
+            </span>
+        </div>
+
     </div>
 
-  </div>
 </div>
 
 <script>
-  // ── Init datetime
-  function initDatetime() {
-    const dt = new Date('2026-05-06T10:50:17');
-    const pad = n => String(n).padStart(2,'0');
-    const local = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
-    document.getElementById('waktu').value = local;
-  }
 
-  function formatRp(n) {
-    return Math.round(n).toLocaleString('id-ID');
-  }
+/* =========================
+   FORMAT RUPIAH
+========================= */
 
-  function formatDatetime(val) {
-    if (!val) return '';
-    const [date, time] = val.split('T');
-    const [y,m,d] = date.split('-');
-    return `${d}/${m}/${y} ${time}:00`;
-  }
+function rupiah(angka){
 
-  function update() {
-    const g = id => document.getElementById(id).value;
+    return new Intl.NumberFormat('id-ID')
+    .format(angka);
 
-    // Calc total
-    const harga = parseFloat(g('harga')) || 0;
-    const volume = parseFloat(g('volume')) || 0;
-    const total = harga * volume;
+}
 
-    document.getElementById('total_display').value = 'Rp. ' + formatRp(total);
+/* =========================
+   FORMAT VOLUME
+========================= */
 
-    // Update preview
-    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+function formatVolume(num){
 
-    set('r_spbu_id', g('spbu_id'));
-    set('r_spbu_no', g('spbu_no'));
-    set('r_alamat', g('alamat'));
-    set('r_telp', g('telp'));
-    set('r_shift', g('shift'));
-    set('r_no_trans', g('no_trans'));
-    set('r_waktu', formatDatetime(g('waktu')));
-    set('r_pulau', g('pulau'));
-    set('r_produk', g('produk').replace(/_/g, '_'));
-    set('r_harga', formatRp(harga));
-    set('r_volume', parseFloat(g('volume')).toFixed(2));
-    set('r_total', formatRp(total));
-    set('r_operator', g('operator').toUpperCase());
-    set('r_cash', formatRp(total));
-    set('r_plat', g('no_plat').toUpperCase());
-  }
+    return parseFloat(num)
+    .toFixed(2);
 
-  function resetForm() {
-    document.getElementById('spbu_id').value = '13292630';
-    document.getElementById('spbu_no').value = '13232530';
-    document.getElementById('alamat').value = 'Tempuling, Kec Tempuling Riau';
-    document.getElementById('telp').value = '+6261 4552422';
-    document.getElementById('shift').value = '1';
-    document.getElementById('no_trans').value = '1324747';
-    document.getElementById('pulau').value = '1';
-    document.getElementById('produk').value = 'PERTAMINA_DEX';
-    document.getElementById('harga').value = '29100';
-    document.getElementById('volume').value = '34.39';
-    document.getElementById('operator').value = 'RAFLYATULLAH';
-    document.getElementById('no_plat').value = 'BM1084G';
-    initDatetime();
-    update();
-  }
+}
 
-  function printReceipt() {
-    window.print();
-  }
+/* =========================
+   GENERATE NOTA
+========================= */
 
-  initDatetime();
-  update();
+function generateNota(){
+
+    let shift =
+        document.getElementById("shift").value;
+
+    let trans =
+        document.getElementById("trans").value;
+
+    let waktu =
+        document.getElementById("waktu").value;
+
+    let pulau =
+        document.getElementById("pulau").value;
+
+    let produk =
+        document.getElementById("produk").value;
+
+    let harga =
+        parseFloat(
+            document.getElementById("harga").value
+        ) || 0;
+
+    let volume =
+        parseFloat(
+            document.getElementById("volume").value
+        ) || 0;
+
+    let operator =
+        document.getElementById("operator").value;
+
+    let plat =
+        document.getElementById("plat").value;
+
+    /* TOTAL */
+
+    let total = harga * volume;
+
+    /* FORMAT WAKTU */
+
+    let waktuFormat = "";
+
+    if(waktu){
+
+        let d = new Date(waktu);
+
+        waktuFormat =
+
+            String(d.getDate())
+            .padStart(2,'0')
+
+            + "/"
+
+            +
+
+            String(d.getMonth()+1)
+            .padStart(2,'0')
+
+            + "/"
+
+            +
+
+            d.getFullYear()
+
+            + " "
+
+            +
+
+            String(d.getHours())
+            .padStart(2,'0')
+
+            + ":"
+
+            +
+
+            String(d.getMinutes())
+            .padStart(2,'0')
+
+            + ":"
+
+            +
+
+            String(d.getSeconds())
+            .padStart(2,'0');
+
+    }
+
+    /* OUTPUT */
+
+    document.getElementById("r_shift")
+    .innerText = shift;
+
+    document.getElementById("r_trans")
+    .innerText = trans;
+
+    document.getElementById("r_waktu")
+    .innerText = waktuFormat;
+
+    document.getElementById("r_pulau")
+    .innerText = pulau;
+
+    document.getElementById("r_produk")
+    .innerText = produk;
+
+    document.getElementById("r_harga")
+    .innerText = rupiah(harga);
+
+    /* VOLUME */
+
+    document.getElementById("r_volume")
+    .innerText = formatVolume(volume);
+
+    /* TOTAL */
+
+    document.getElementById("r_total")
+    .innerText = rupiah(Math.round(total));
+
+    document.getElementById("r_cash")
+    .innerText = rupiah(Math.round(total));
+
+    document.getElementById("r_operator")
+    .innerText = operator;
+
+    document.getElementById("r_plat")
+    .innerText = plat;
+
+}
+
 </script>
+
 </body>
 </html>
