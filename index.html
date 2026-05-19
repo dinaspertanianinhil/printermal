@@ -64,8 +64,7 @@ body{
 ========================= */
 
 .receipt{
-
-    width:56mm;
+    width:48mm;
     background:white;
 
     padding:
@@ -82,8 +81,6 @@ body{
     word-break:break-word;
 
     letter-spacing:-0.2px;
-
-    box-sizing:border-box;
 }
 
 .center{
@@ -134,41 +131,31 @@ body{
 
 @media print{
 
-    html,
     body{
-        width:58mm;
+        background:white;
         margin:0;
         padding:0;
-        background:white;
     }
 
     .form-box{
         display:none;
     }
 
-    .container{
-        display:block;
-    }
-
     .receipt{
 
-        width:56mm;
-
-        margin:0;
+        width:48mm;
 
         padding:
             5px
             4px
-            20px;
-
-        box-sizing:border-box;
+            25px;
 
         font-size:10px;
         line-height:1.2;
     }
 
     @page{
-        size:58mm;
+        size:58mm auto;
         margin:0;
     }
 
@@ -528,8 +515,12 @@ function generateNota(){
     document.getElementById("r_harga")
     .innerText = rupiah(harga);
 
+    /* VOLUME */
+
     document.getElementById("r_volume")
     .innerText = formatVolume(volume);
+
+    /* TOTAL */
 
     document.getElementById("r_total")
     .innerText = rupiah(Math.round(total));
