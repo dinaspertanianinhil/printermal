@@ -598,6 +598,74 @@ body {
   }
 }
 
+
+/* ── BLUETOOTH BUTTONS ── */
+.btn-bt {
+  background: #1a3a5c;
+  color: #5bc4f5;
+  border: 1px solid #2a5a8c;
+}
+.btn-bt:hover { background: #1e4a72; }
+.btn-bt.connected {
+  background: #1a3d2a;
+  color: var(--green);
+  border-color: #2a6a3a;
+}
+
+.btn-print {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  background: var(--green);
+  color: #0f1117;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-print:disabled {
+  background: var(--surface2);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.btn-print:not(:disabled):hover {
+  background: #3de060;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(78,203,113,0.3);
+}
+
+.bt-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.bt-dot-off {
+  width: 8px; height: 8px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.bt-dot-on {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 1.5s infinite;
+}
+.bt-dot-err {
+  width: 8px; height: 8px;
+  background: var(--red);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -701,21 +769,29 @@ body {
 
     <div class="btn-group">
       <button class="btn btn-primary" onclick="generateNota()">
-        ↻ Generate Nota
+        ↻ Generate
       </button>
-      <button class="btn btn-secondary" onclick="printNota()">
-        ⎙ Print Nota
+      <button class="btn btn-bt" id="btnConnect" onclick="connectBluetooth()">
+        📶 Konek BT
       </button>
     </div>
 
+    <div id="bt-status" class="bt-status">
+      <span id="bt-dot" class="bt-dot-off"></span>
+      <span id="bt-text">Belum terhubung ke printer</span>
+    </div>
+
+    <button class="btn btn-print" id="btnPrint" onclick="printEscPos()" disabled>
+      🖨 Cetak Struk
+    </button>
+
     <div class="print-tips">
-      <div class="tips-title">⚙ Pengaturan Print Thermal</div>
+      <div class="tips-title">ℹ Cara Pakai Bluetooth Print</div>
       <ul>
-        <li>Ukuran kertas: <strong>58mm</strong> (Roll)</li>
-        <li>Margin: <strong>None / Tanpa Batas</strong></li>
-        <li>Skala: <strong>100%</strong> (jangan "Fit to page")</li>
-        <li>Matikan <strong>Header & Footer</strong> browser</li>
-        <li>Background graphics: <strong>OFF</strong></li>
+        <li>Pastikan printer thermal sudah <strong>ON &amp; Bluetooth aktif</strong></li>
+        <li>Tap <strong>Konek BT</strong> → pilih printer dari daftar</li>
+        <li>Setelah terhubung, tap <strong>Cetak Struk</strong></li>
+        <li>Gunakan <strong>Chrome Android</strong> (Web Bluetooth tidak support Firefox/Safari)</li>
       </ul>
     </div>
 
@@ -894,10 +970,268 @@ function generateNota() {
   set("s_total",  total  ? rupiah(total)                 : "—");
 }
 
-function printNota() {
-  // Pastikan nota sudah digenerate sebelum print
-  generateNota();
-  setTimeout(() => window.print(), 100);
+/* ── BLUETOOTH ESC/POS ── */
+let btDevice = null;
+let btChar   = null;
+
+// UUID ESC/POS Serial Port Service (standard untuk kebanyakan thermal printer BT)
+const SERIAL_SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
+const SERIAL_CHAR    = '00002af1-0000-1000-8000-00805f9b34fb';
+
+async function connectBluetooth() {
+  const btn  = document.getElementById('btnConnect');
+  const dot  = document.getElementById('bt-dot');
+  const txt  = document.getElementById('bt-text');
+  const pBtn = document.getElementById('btnPrint');
+
+  if (!navigator.bluetooth) {
+    alert('Web Bluetooth tidak didukung.\nGunakan Chrome Android terbaru.');
+    return;
+  }
+
+  try {
+    txt.textContent = 'Mencari printer...';
+    dot.className = 'bt-dot-off';
+
+    btDevice = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: [
+        SERIAL_SERVICE,
+        '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Nordic UART
+        '0000ff00-0000-1000-8000-00805f9b34fb', // Generic printer
+        '000018f0-0000-1000-8000-00805f9b34fb',
+      ]
+    });
+
+    txt.textContent = 'Menghubungkan ke ' + btDevice.name + '...';
+    const server  = await btDevice.gatt.connect();
+
+    // Coba beberapa service UUID umum printer thermal
+    const serviceUUIDs = [
+      SERIAL_SERVICE,
+      '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+      '0000ff00-0000-1000-8000-00805f9b34fb',
+    ];
+    const charUUIDs = [
+      SERIAL_CHAR,
+      '49535343-8841-43f4-a8d4-ecbe34729bb3',
+      '0000ff02-0000-1000-8000-00805f9b34fb',
+      '00002af1-0000-1000-8000-00805f9b34fb',
+    ];
+
+    let found = false;
+    for (const svcUUID of serviceUUIDs) {
+      try {
+        const service = await server.getPrimaryService(svcUUID);
+        for (const chUUID of charUUIDs) {
+          try {
+            btChar = await service.getCharacteristic(chUUID);
+            found  = true;
+            break;
+          } catch(e) {}
+        }
+        if (found) break;
+      } catch(e) {}
+    }
+
+    if (!found) {
+      // Fallback: ambil semua services dan cari characteristic writable
+      const services = await server.getPrimaryServices();
+      outer:
+      for (const svc of services) {
+        const chars = await svc.getCharacteristics();
+        for (const ch of chars) {
+          if (ch.properties.write || ch.properties.writeWithoutResponse) {
+            btChar = ch;
+            found = true;
+            break outer;
+          }
+        }
+      }
+    }
+
+    if (!found) throw new Error('Karakteristik printer tidak ditemukan');
+
+    dot.className   = 'bt-dot-on';
+    txt.textContent = '✓ Terhubung: ' + btDevice.name;
+    btn.textContent = '✓ ' + (btDevice.name || 'Printer');
+    btn.classList.add('connected');
+    pBtn.disabled = false;
+
+    btDevice.addEventListener('gattserverdisconnected', () => {
+      dot.className   = 'bt-dot-err';
+      txt.textContent = 'Terputus — tap Konek BT lagi';
+      btn.textContent = '📶 Konek BT';
+      btn.classList.remove('connected');
+      pBtn.disabled = true;
+      btChar = null;
+    });
+
+  } catch(err) {
+    dot.className   = 'bt-dot-err';
+    txt.textContent = 'Gagal: ' + err.message;
+    console.error(err);
+  }
+}
+
+/* ── ESC/POS builder ── */
+function esc(...bytes) { return new Uint8Array(bytes); }
+
+function textToBytes(str) {
+  return new TextEncoder().encode(str);
+}
+
+function center(text, width=32) {
+  const pad = Math.max(0, Math.floor((width - text.length) / 2));
+  return ' '.repeat(pad) + text;
+}
+
+function leftRight(left, right, width=32) {
+  const space = Math.max(1, width - left.length - right.length);
+  return left + ' '.repeat(space) + right;
+}
+
+function dashedLine(width=32) { return '-'.repeat(width); }
+
+async function writeChunk(data) {
+  const CHUNK = 100;
+  for (let i = 0; i < data.length; i += CHUNK) {
+    const slice = data.slice(i, i + CHUNK);
+    if (btChar.properties.writeWithoutResponse) {
+      await btChar.writeValueWithoutResponse(slice);
+    } else {
+      await btChar.writeValue(slice);
+    }
+    await new Promise(r => setTimeout(r, 30));
+  }
+}
+
+async function printEscPos() {
+  if (!btChar) { alert('Printer belum terhubung!'); return; }
+
+  const btn = document.getElementById('btnPrint');
+  btn.textContent = '⏳ Mencetak...';
+  btn.disabled = true;
+
+  try {
+    // Ambil data nota
+    const spbu_id    = document.getElementById("spbu_id").value    || "13292630";
+    const spbu_nama  = document.getElementById("spbu_nama").value  || "SPBU 13292630";
+    const spbu_alamat= document.getElementById("spbu_alamat").value|| "Tempuling, Kec Tempuling Riau";
+    const spbu_telp  = document.getElementById("spbu_telp").value  || "+6261 4552422";
+    const shift      = document.getElementById("shift").value      || "-";
+    const trans      = document.getElementById("trans").value      || "-";
+    const pulau      = document.getElementById("pulau").value      || "-";
+    const produk     = document.getElementById("produk").value     || "-";
+    const harga      = parseFloat(document.getElementById("harga").value)  || 0;
+    const volume     = parseFloat(document.getElementById("volume").value) || 0;
+    const operator   = document.getElementById("operator").value   || "-";
+    const plat       = document.getElementById("plat").value       || "-";
+    const total      = Math.round(harga * volume);
+
+    const waktuVal = document.getElementById("waktu").value;
+    let waktuStr = "-";
+    if (waktuVal) {
+      const d = new Date(waktuVal);
+      const p = n => String(n).padStart(2,'0');
+      waktuStr = p(d.getDate())+"/"+p(d.getMonth()+1)+"/"+d.getFullYear()
+               +" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+    }
+
+    const W = 32; // karakter per baris 58mm
+
+    const rp = n => new Intl.NumberFormat('id-ID').format(n);
+
+    // Build ESC/POS command
+    const cmds = [];
+
+    const ESC_INIT      = [0x1B,0x40];           // init
+    const ALIGN_CENTER  = [0x1B,0x61,0x01];
+    const ALIGN_LEFT    = [0x1B,0x61,0x00];
+    const BOLD_ON       = [0x1B,0x45,0x01];
+    const BOLD_OFF      = [0x1B,0x45,0x00];
+    const SIZE_NORMAL   = [0x1D,0x21,0x00];
+    const SIZE_DOUBLE   = [0x1D,0x21,0x11];
+    const LF            = [0x0A];
+    const CUT           = [0x1D,0x56,0x41,0x10]; // partial cut
+
+    const add = (...parts) => parts.forEach(p => cmds.push(...p));
+    const txt = s => [...textToBytes(s)];
+    const nl  = () => add(LF);
+
+    add(ESC_INIT);
+
+    // Header SPBU
+    add(ALIGN_CENTER, BOLD_ON);
+    add(txt(spbu_id)); nl();
+    add(txt(spbu_nama)); nl();
+    add(BOLD_OFF);
+    add(txt(spbu_alamat)); nl();
+    add(txt("Telp. " + spbu_telp)); nl();
+
+    add(ALIGN_LEFT);
+    add(txt(dashedLine(W))); nl();
+
+    // Info transaksi
+    add(txt(leftRight("Shift: "+shift, "No.Trans: "+trans, W))); nl();
+    add(txt("Waktu: "+waktuStr)); nl();
+
+    add(txt(dashedLine(W))); nl();
+
+    // Detail produk
+    add(txt(leftRight("Pulau/Pompa", ": "+pulau, W))); nl();
+    add(txt(leftRight("Nama Produk", ": "+produk, W))); nl();
+    add(txt(leftRight("Harga/Liter", ": Rp "+rp(harga), W))); nl();
+    add(txt(leftRight("Volume (L)", ": "+volume.toFixed(2), W))); nl();
+    add(txt(leftRight("Operator", ": "+operator, W))); nl();
+
+    add(txt(dashedLine(W))); nl();
+
+    // Total — double size
+    add(ALIGN_CENTER, SIZE_DOUBLE, BOLD_ON);
+    add(txt("Rp "+rp(total))); nl();
+    add(SIZE_NORMAL, BOLD_OFF, ALIGN_LEFT);
+
+    add(txt(dashedLine(W))); nl();
+
+    // CASH
+    add(BOLD_ON);
+    add(txt(leftRight("CASH", "Rp "+rp(total), W))); nl();
+    add(BOLD_OFF);
+
+    nl(); nl();
+
+    // Plat
+    add(txt(leftRight("No. Plat", ": "+plat, W))); nl();
+
+    nl(); nl();
+
+    // Footer
+    add(ALIGN_CENTER);
+    add(txt("* Terima kasih *")); nl();
+    add(txt("Selamat berkendara aman")); nl();
+
+    nl(); nl(); nl();
+
+    // Cut
+    add(CUT);
+
+    // Kirim ke printer
+    const data = new Uint8Array(cmds);
+    await writeChunk(data);
+
+    btn.textContent = '✓ Berhasil Dicetak!';
+    setTimeout(() => {
+      btn.textContent = '🖨 Cetak Struk';
+      btn.disabled = false;
+    }, 2000);
+
+  } catch(err) {
+    btn.textContent = '✗ Gagal — Coba Lagi';
+    btn.disabled = false;
+    alert('Gagal cetak: ' + err.message);
+    console.error(err);
+  }
 }
 
 // Set default datetime to now
