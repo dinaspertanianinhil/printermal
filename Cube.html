@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPBU Nota Generator</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #222636;
+  --border: #2e3347;
+  --accent: #e8c44a;
+  --accent-dim: rgba(232,196,74,0.12);
+  --text: #e8eaf0;
+  --text-muted: #6b7194;
+  --text-dim: #9ca3c0;
+  --red: #e05c5c;
+  --green: #4ecb71;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 20px;
+}
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(232,196,74,0.3);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 99px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.header p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ── LAYOUT ── */
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+@media (max-width: 720px) {
+  .container { grid-template-columns: 1fr; }
+  .receipt-wrapper { order: -1; }
+}
+
+/* ── FORM PANEL ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── SECTION GROUP ── */
+.section-group {
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.field label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.3px;
+}
+
+.field input,
+.field select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  outline: none;
+  appearance: none;
+}
+
+.field input::placeholder { color: var(--text-muted); }
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232,196,74,0.12);
+}
+
+.field input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* ── BUTTONS ── */
+.btn-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0f1117;
+}
+
+.btn-primary:hover {
+  background: #f0d05a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(232,196,74,0.25);
+}
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+  transform: translateY(-1px);
+}
+
+/* ── RECEIPT WRAPPER ── */
+.receipt-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.receipt-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.receipt-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 0.5px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── RECEIPT CARD ── */
+.receipt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ── THERMAL RECEIPT ── */
+.receipt {
+  width: 210px;
+  background: #fff;
+  color: #111;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 9.5px;
+  line-height: 1.3;
+  padding: 12px 10px 30px;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Torn top edge */
+.receipt::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, #fff 0 4px, transparent 4px 8px);
+  margin: -12px -10px 10px;
+  border-top: 1px dashed #ccc;
+}
+
+/* Torn bottom edge */
+.receipt::after {
+  content: '';
+  display: block;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, #fff 0 4px, transparent 4px 8px);
+  margin: 20px -10px -30px;
+  border-bottom: 1px dashed #ccc;
+}
+
+.r-center { text-align: center; }
+
+.r-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.r-logo img {
+  width: 64px;
+  object-fit: contain;
+}
+
+.r-title {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.r-sub {
+  font-size: 8.5px;
+  color: #444;
+}
+
+.r-divider {
+  border: none;
+  border-top: 1px dashed #999;
+  margin: 6px 0;
+}
+
+.r-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.r-key {
+  color: #555;
+  white-space: nowrap;
+}
+
+.r-val {
+  text-align: right;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.r-block {
+  margin-bottom: 2px;
+}
+
+.r-block .r-key { display: block; color: #555; font-size: 8.5px; }
+.r-block .r-val { display: block; font-weight: 600; }
+
+.r-total-box {
+  background: #f3f3f3;
+  padding: 5px 7px;
+  margin: 6px 0;
+  border-radius: 3px;
+}
+
+.r-total-label {
+  font-size: 8px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.r-total-amount {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.r-cash-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  margin: 4px 0;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.r-footer {
+  text-align: center;
+  font-size: 8px;
+  color: #777;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* ── STATS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+
+/* ── PRINT TIPS ── */
+.print-tips {
+  margin-top: 14px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(232,196,74,0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.tips-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.print-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.print-tips li {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding-left: 12px;
+  position: relative;
+}
+
+.print-tips li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.print-tips strong {
+  color: var(--text);
+}
+
+/* ── PRINT ── */
+@media print {
+
+  /* Paksa warna hitam-putih, tidak ada background gelap */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  @page {
+    size: 58mm auto;
+    margin: 0mm;
+  }
+
+  /* Sembunyikan semua UI kecuali struk */
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .header,
+  .panel,
+  .stats-row,
+  .receipt-header,
+  .receipt-label,
+  .live-badge,
+  .receipt-wrapper > .receipt-header,
+  .receipt-wrapper > .stats-row {
+    display: none !important;
+  }
+
+  .container {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .receipt-wrapper {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Wrapper kartu struk */
+  .receipt-card {
+    background: white !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* Struk thermal itu sendiri */
+  .receipt {
+    width: 54mm !important;          /* sedikit lebih kecil dari 58mm agar ada margin kiri */
+    margin: 0 auto !important;
+    padding: 4mm 3mm 20mm !important;
+    background: white !important;
+    color: black !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 8pt !important;
+    line-height: 1.25 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  /* Hapus efek torn paper saat print */
+  .receipt::before,
+  .receipt::after {
+    display: none !important;
+  }
+
+  /* Paksa warna teks hitam semua */
+  .receipt,
+  .receipt * {
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Total box tetap pakai background abu muda */
+  .r-total-box {
+    background: #eeeeee !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Divider tetap tercetak */
+  .r-divider {
+    border-top: 1px dashed #555 !important;
+  }
+
+  .r-cash-row {
+    border-top: 1px solid #555 !important;
+    border-bottom: 1px solid #555 !important;
+  }
+
+  /* Logo tetap tercetak */
+  .r-logo img {
+    width: 50px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+
+/* ── BLUETOOTH BUTTONS ── */
+.btn-bt {
+  background: #1a3a5c;
+  color: #5bc4f5;
+  border: 1px solid #2a5a8c;
+}
+.btn-bt:hover { background: #1e4a72; }
+.btn-bt.connected {
+  background: #1a3d2a;
+  color: var(--green);
+  border-color: #2a6a3a;
+}
+
+.btn-print {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  background: var(--green);
+  color: #0f1117;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-print:disabled {
+  background: var(--surface2);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.btn-print:not(:disabled):hover {
+  background: #3de060;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(78,203,113,0.3);
+}
+
+.bt-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.bt-dot-off {
+  width: 8px; height: 8px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.bt-dot-on {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 1.5s infinite;
+}
+.bt-dot-err {
+  width: 8px; height: 8px;
+  background: var(--red);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">
+    <span>⛽</span> SPBU Management
+  </div>
+  <h1>Generator Nota Bahan Bakar</h1>
+  <p>Isi form di bawah untuk membuat nota transaksi SPBU</p>
+</div>
+
+<div class="container">
+
+  <!-- FORM -->
+  <div class="panel">
+    <div class="panel-title">Form Input Transaksi</div>
+
+    <!-- SPBU INFO -->
+    <div class="section-group">
+      <div class="section-label">Informasi SPBU</div>
+
+      <div class="field">
+        <label>Upload Logo (PNG/JPG, hitam putih)</label>
+        <input type="file" id="logo_file" accept="image/*" onchange="loadLogo(this)">
+        <canvas id="logo_canvas" style="display:none;"></canvas>
+        <div id="logo_preview" style="display:none; margin-top:6px; background:#fff; padding:6px; border-radius:6px; text-align:center;">
+          <img id="logo_img_preview" style="max-height:40px; max-width:160px; image-rendering:pixelated;">
+          <div style="font-size:10px; color:#888; margin-top:4px;" id="logo_info"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nama / ID SPBU</label>
+        <input type="text" id="spbu_id" placeholder="cth: 13292630" oninput="generateNota()">
+      </div>
+
+      <div class="field">
+        <label>Nama SPBU</label>
+        <input type="text" id="spbu_nama" placeholder="cth: SPBU 13292630" oninput="generateNota()">
+      </div>
+
+      <div class="field">
+        <label>Alamat</label>
+        <input type="text" id="spbu_alamat" placeholder="cth: Jl. Raya No.1, Batam" oninput="generateNota()">
+      </div>
+
+      <div class="field">
+        <label>No. Telepon</label>
+        <input type="text" id="spbu_telp" placeholder="cth: +6261 4552422" oninput="generateNota()">
+      </div>
+    </div>
+
+    <!-- TRANSAKSI -->
+    <div class="section-group">
+      <div class="section-label">Detail Transaksi</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Shift</label>
+          <input type="text" id="shift" placeholder="1" oninput="generateNota()">
+        </div>
+        <div class="field">
+          <label>No. Transaksi</label>
+          <input type="text" id="trans" placeholder="1324747" oninput="generateNota()">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Waktu Transaksi</label>
+        <input type="datetime-local" id="waktu" oninput="generateNota()">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Pulau / Pompa</label>
+          <input type="text" id="pulau" placeholder="1" oninput="generateNota()">
+        </div>
+        <div class="field">
+          <label>Operator</label>
+          <input type="text" id="operator" placeholder="Nama Operator" oninput="generateNota()">
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUK -->
+    <div class="section-group">
+      <div class="section-label">Produk & Harga</div>
+
+      <div class="field">
+        <label>Nama Produk</label>
+        <input type="text" id="produk" placeholder="cth: PERTAMINA DEX" oninput="generateNota()">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Harga / Liter (Rp)</label>
+          <input type="number" id="harga" placeholder="29100" oninput="generateNota()">
+        </div>
+        <div class="field">
+          <label>Volume (Liter)</label>
+          <input type="number" step="0.01" id="volume" placeholder="34.39" oninput="generateNota()">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>No. Plat Kendaraan</label>
+        <input type="text" id="plat" placeholder="cth: BM 1234 AB" oninput="generateNota()">
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generateNota()">
+        ↻ Generate
+      </button>
+      <button class="btn btn-bt" id="btnConnect" onclick="connectBluetooth()">
+        📶 Konek BT
+      </button>
+    </div>
+
+    <div id="bt-status" class="bt-status">
+      <span id="bt-dot" class="bt-dot-off"></span>
+      <span id="bt-text">Belum terhubung ke printer</span>
+    </div>
+
+    <button class="btn btn-print" id="btnPrint" onclick="printEscPos()" disabled>
+      🖨 Cetak Struk
+    </button>
+
+    <div class="print-tips">
+      <div class="tips-title">ℹ Cara Pakai Bluetooth Print</div>
+      <ul>
+        <li>Pastikan printer thermal sudah <strong>ON &amp; Bluetooth aktif</strong></li>
+        <li>Tap <strong>Konek BT</strong> → pilih printer dari daftar</li>
+        <li>Setelah terhubung, tap <strong>Cetak Struk</strong></li>
+        <li>Gunakan <strong>Chrome Android</strong> (Web Bluetooth tidak support Firefox/Safari)</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="receipt-wrapper">
+
+    <div class="receipt-header">
+      <div class="receipt-label">Preview Nota</div>
+      <div class="live-badge">
+        <span class="live-dot"></span> LIVE
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="s_volume">—</div>
+        <div class="stat-label">Liter</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="s_harga">—</div>
+        <div class="stat-label">Harga/L</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="s_total">—</div>
+        <div class="stat-label">Total (Rp)</div>
+      </div>
+    </div>
+
+    <div class="receipt-card">
+
+      <!-- THERMAL RECEIPT -->
+      <div class="receipt">
+
+        <div class="r-center" id="r_logo_wrap" style="margin-bottom:4px;">
+          <img id="r_logo_preview" style="display:none; max-width:120px; max-height:36px; image-rendering:pixelated;">
+          <div id="r_logo_text" style="font-size:11px; font-weight:700; letter-spacing:2px;">════ PERTAMINA ════</div>
+        </div>
+
+        <div class="r-center r-title" id="r_spbu_id">13292630</div>
+        <div class="r-center r-title" id="r_spbu_nama">SPBU 13292630</div>
+        <div class="r-center r-sub" id="r_spbu_alamat">Tempuling, Kec Tempuling Riau</div>
+        <div class="r-center r-sub" id="r_spbu_telp">Telp. +6261 4552422</div>
+
+        <hr class="r-divider">
+
+        <div class="r-row">
+          <span class="r-key">Shift</span>
+          <span class="r-val" id="r_shift">1</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">No. Trans</span>
+          <span class="r-val" id="r_trans">1324747</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Waktu</span>
+          <span class="r-val" id="r_waktu">06/05/2026 10:50:17</span>
+        </div>
+
+        <hr class="r-divider">
+
+        <div class="r-row">
+          <span class="r-key">Pulau/Pompa</span>
+          <span class="r-val" id="r_pulau">1</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Produk</span>
+          <span class="r-val" id="r_produk">PERTAMINA_DEX</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Harga/L</span>
+          <span class="r-val">Rp <span id="r_harga">29,100</span></span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Volume</span>
+          <span class="r-val"><span id="r_volume">34.39</span> L</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Operator</span>
+          <span class="r-val" id="r_operator">RAFLYATULLAH</span>
+        </div>
+
+        <div class="r-total-box">
+          <div class="r-total-label">Total Harga</div>
+          <div class="r-total-amount">Rp <span id="r_total">1,000,749</span></div>
+        </div>
+
+        <div class="r-cash-row">
+          <span>CASH</span>
+          <span id="r_cash">Rp 1,000,749</span>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="r-row">
+          <span class="r-key">No. Plat</span>
+          <span class="r-val" id="r_plat">BM1084G</span>
+        </div>
+
+        <div class="r-footer">
+          ★ Terima kasih atas kunjungan Anda ★<br>
+          Selamat berkendara dengan aman
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function rupiah(n) {
+  return new Intl.NumberFormat('id-ID').format(Math.round(n));
+}
+
+function generateNota() {
+
+  const shift    = document.getElementById("shift").value;
+  const trans    = document.getElementById("trans").value;
+  const waktu    = document.getElementById("waktu").value;
+  const pulau    = document.getElementById("pulau").value;
+  const produk   = document.getElementById("produk").value;
+  const harga    = parseFloat(document.getElementById("harga").value) || 0;
+  const volume   = parseFloat(document.getElementById("volume").value) || 0;
+  const operator = document.getElementById("operator").value;
+  const plat     = document.getElementById("plat").value;
+
+  const spbu_id    = document.getElementById("spbu_id").value;
+  const spbu_nama  = document.getElementById("spbu_nama").value;
+  const spbu_alamat= document.getElementById("spbu_alamat").value;
+  const spbu_telp  = document.getElementById("spbu_telp").value;
+
+  const total = harga * volume;
+
+  // Format waktu
+  let waktuFormat = "—";
+  if (waktu) {
+    const d = new Date(waktu);
+    waktuFormat =
+      String(d.getDate()).padStart(2,'0') + "/" +
+      String(d.getMonth()+1).padStart(2,'0') + "/" +
+      d.getFullYear() + " " +
+      String(d.getHours()).padStart(2,'0') + ":" +
+      String(d.getMinutes()).padStart(2,'0') + ":" +
+      String(d.getSeconds()).padStart(2,'0');
+  }
+
+  // Receipt fields
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = val;
+  };
+
+  set("r_spbu_id",     spbu_id     || "13292630");
+  set("r_spbu_nama",   spbu_nama   || "SPBU 13292630");
+  set("r_spbu_alamat", spbu_alamat || "Tempuling, Kec Tempuling Riau");
+  set("r_spbu_telp",   spbu_telp ? "Telp. " + spbu_telp : "Telp. +6261 4552422");
+
+  set("r_shift",    shift    || "—");
+  set("r_trans",    trans    || "—");
+  set("r_waktu",    waktuFormat);
+  set("r_pulau",    pulau    || "—");
+  set("r_produk",   produk   || "—");
+  set("r_harga",    harga ? rupiah(harga) : "—");
+  set("r_volume",   volume ? parseFloat(volume).toFixed(2) : "—");
+  set("r_operator", operator || "—");
+  set("r_plat",     plat     || "—");
+  set("r_total",    total ? rupiah(total) : "—");
+  set("r_cash",     total ? "Rp " + rupiah(total) : "—");
+
+  // Stats cards
+  set("s_volume", volume ? parseFloat(volume).toFixed(2) : "—");
+  set("s_harga",  harga  ? rupiah(harga)                 : "—");
+  set("s_total",  total  ? rupiah(total)                 : "—");
+}
+
+/* ── BLUETOOTH ESC/POS ── */
+let btDevice = null;
+let btChar   = null;
+
+// UUID ESC/POS Serial Port Service (standard untuk kebanyakan thermal printer BT)
+const SERIAL_SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
+const SERIAL_CHAR    = '00002af1-0000-1000-8000-00805f9b34fb';
+
+async function connectBluetooth() {
+  const btn  = document.getElementById('btnConnect');
+  const dot  = document.getElementById('bt-dot');
+  const txt  = document.getElementById('bt-text');
+  const pBtn = document.getElementById('btnPrint');
+
+  if (!navigator.bluetooth) {
+    alert('Web Bluetooth tidak didukung.\nGunakan Chrome Android terbaru.');
+    return;
+  }
+
+  try {
+    txt.textContent = 'Mencari printer...';
+    dot.className = 'bt-dot-off';
+
+    btDevice = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: [
+        SERIAL_SERVICE,
+        '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Nordic UART
+        '0000ff00-0000-1000-8000-00805f9b34fb', // Generic printer
+        '000018f0-0000-1000-8000-00805f9b34fb',
+      ]
+    });
+
+    txt.textContent = 'Menghubungkan ke ' + btDevice.name + '...';
+    const server  = await btDevice.gatt.connect();
+
+    // Coba beberapa service UUID umum printer thermal
+    const serviceUUIDs = [
+      SERIAL_SERVICE,
+      '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+      '0000ff00-0000-1000-8000-00805f9b34fb',
+    ];
+    const charUUIDs = [
+      SERIAL_CHAR,
+      '49535343-8841-43f4-a8d4-ecbe34729bb3',
+      '0000ff02-0000-1000-8000-00805f9b34fb',
+      '00002af1-0000-1000-8000-00805f9b34fb',
+    ];
+
+    let found = false;
+    for (const svcUUID of serviceUUIDs) {
+      try {
+        const service = await server.getPrimaryService(svcUUID);
+        for (const chUUID of charUUIDs) {
+          try {
+            btChar = await service.getCharacteristic(chUUID);
+            found  = true;
+            break;
+          } catch(e) {}
+        }
+        if (found) break;
+      } catch(e) {}
+    }
+
+    if (!found) {
+      // Fallback: ambil semua services dan cari characteristic writable
+      const services = await server.getPrimaryServices();
+      outer:
+      for (const svc of services) {
+        const chars = await svc.getCharacteristics();
+        for (const ch of chars) {
+          if (ch.properties.write || ch.properties.writeWithoutResponse) {
+            btChar = ch;
+            found = true;
+            break outer;
+          }
+        }
+      }
+    }
+
+    if (!found) throw new Error('Karakteristik printer tidak ditemukan');
+
+    dot.className   = 'bt-dot-on';
+    txt.textContent = '✓ Terhubung: ' + btDevice.name;
+    btn.textContent = '✓ ' + (btDevice.name || 'Printer');
+    btn.classList.add('connected');
+    pBtn.disabled = false;
+
+    btDevice.addEventListener('gattserverdisconnected', () => {
+      dot.className   = 'bt-dot-err';
+      txt.textContent = 'Terputus — tap Konek BT lagi';
+      btn.textContent = '📶 Konek BT';
+      btn.classList.remove('connected');
+      pBtn.disabled = true;
+      btChar = null;
+    });
+
+  } catch(err) {
+    dot.className   = 'bt-dot-err';
+    txt.textContent = 'Gagal: ' + err.message;
+    console.error(err);
+  }
+}
+
+/* ── ESC/POS builder ── */
+function esc(...bytes) { return new Uint8Array(bytes); }
+
+function textToBytes(str) {
+  return new TextEncoder().encode(str);
+}
+
+function center(text, width=32) {
+  const pad = Math.max(0, Math.floor((width - text.length) / 2));
+  return ' '.repeat(pad) + text;
+}
+
+function leftRight(left, right, width=32) {
+  const space = Math.max(1, width - left.length - right.length);
+  return left + ' '.repeat(space) + right;
+}
+
+function dashedLine(width=32) { return '-'.repeat(width); }
+
+async function writeChunk(data) {
+  const CHUNK = 100;
+  for (let i = 0; i < data.length; i += CHUNK) {
+    const slice = data.slice(i, i + CHUNK);
+    if (btChar.properties.writeWithoutResponse) {
+      await btChar.writeValueWithoutResponse(slice);
+    } else {
+      await btChar.writeValue(slice);
+    }
+    await new Promise(r => setTimeout(r, 30));
+  }
+}
+
+async function printEscPos() {
+  if (!btChar) { alert('Printer belum terhubung!'); return; }
+
+  const btn = document.getElementById('btnPrint');
+  btn.textContent = '⏳ Mencetak...';
+  btn.disabled = true;
+
+  try {
+    // Ambil data nota
+    const spbu_id    = document.getElementById("spbu_id").value    || "13292630";
+    const spbu_nama  = document.getElementById("spbu_nama").value  || "SPBU 13292630";
+    const spbu_alamat= document.getElementById("spbu_alamat").value|| "Tempuling, Kec Tempuling Riau";
+    const spbu_telp  = document.getElementById("spbu_telp").value  || "+6261 4552422";
+    const shift      = document.getElementById("shift").value      || "-";
+    const trans      = document.getElementById("trans").value      || "-";
+    const pulau      = document.getElementById("pulau").value      || "-";
+    const produk     = document.getElementById("produk").value     || "-";
+    const harga      = parseFloat(document.getElementById("harga").value)  || 0;
+    const volume     = parseFloat(document.getElementById("volume").value) || 0;
+    const operator   = document.getElementById("operator").value   || "-";
+    const plat       = document.getElementById("plat").value       || "-";
+    const total      = Math.round(harga * volume);
+
+    const waktuVal = document.getElementById("waktu").value;
+    let waktuStr = "-";
+    if (waktuVal) {
+      const d = new Date(waktuVal);
+      const p = n => String(n).padStart(2,'0');
+      waktuStr = p(d.getDate())+"/"+p(d.getMonth()+1)+"/"+d.getFullYear()
+               +" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+    }
+
+    const W = 32; // karakter per baris 58mm
+
+    const rp = n => new Intl.NumberFormat('id-ID').format(n);
+
+    // Build ESC/POS command
+    const cmds = [];
+
+    const ESC_INIT      = [0x1B,0x40];           // init
+    const ALIGN_CENTER  = [0x1B,0x61,0x01];
+    const ALIGN_LEFT    = [0x1B,0x61,0x00];
+    const BOLD_ON       = [0x1B,0x45,0x01];
+    const BOLD_OFF      = [0x1B,0x45,0x00];
+    const SIZE_NORMAL   = [0x1D,0x21,0x00];
+    const SIZE_DOUBLE   = [0x1D,0x21,0x11];
+    const LF            = [0x0A];
+    const CUT           = [0x1D,0x56,0x41,0x10]; // partial cut
+
+    const add = (...parts) => parts.forEach(p => cmds.push(...p));
+    const txt = s => [...textToBytes(s)];
+    const nl  = () => add(LF);
+
+    add(ESC_INIT);
+    add(ALIGN_CENTER);
+
+    // Logo — bitmap jika ada, fallback ASCII art
+    if (window._logoEscPos) {
+      // Kirim bitmap ESC/POS
+      for (const chunk of window._logoEscPos) {
+        cmds.push(...chunk);
+      }
+      nl();
+    } else {
+      add(BOLD_ON);
+      add(txt("================================")); nl();
+      add(txt("       ** PERTAMINA **          ")); nl();
+      add(txt("================================")); nl();
+      add(BOLD_OFF);
+      nl();
+    }
+
+    // Info SPBU
+    add(ALIGN_CENTER, BOLD_ON);
+    add(txt(spbu_id)); nl();
+    add(txt(spbu_nama)); nl();
+    add(BOLD_OFF);
+    add(txt(spbu_alamat)); nl();
+    add(txt("Telp. " + spbu_telp)); nl();
+
+    add(ALIGN_LEFT);
+    add(txt(dashedLine(W))); nl();
+
+    // Info transaksi
+    add(txt(leftRight("Shift: "+shift, "No.Trans: "+trans, W))); nl();
+    add(txt("Waktu: "+waktuStr)); nl();
+
+    add(txt(dashedLine(W))); nl();
+
+    // Detail produk
+    add(txt(leftRight("Pulau/Pompa", ": "+pulau, W))); nl();
+    add(txt(leftRight("Nama Produk", ": "+produk, W))); nl();
+    add(txt(leftRight("Harga/Liter", ": Rp "+rp(harga), W))); nl();
+    add(txt(leftRight("Volume (L)", ": "+volume.toFixed(2), W))); nl();
+    add(txt(leftRight("Operator", ": "+operator, W))); nl();
+
+    add(txt(dashedLine(W))); nl();
+
+    // Total — double size
+    add(ALIGN_CENTER, SIZE_DOUBLE, BOLD_ON);
+    add(txt("Rp "+rp(total))); nl();
+    add(SIZE_NORMAL, BOLD_OFF, ALIGN_LEFT);
+
+    add(txt(dashedLine(W))); nl();
+
+    // CASH
+    add(BOLD_ON);
+    add(txt(leftRight("CASH", "Rp "+rp(total), W))); nl();
+    add(BOLD_OFF);
+
+    nl(); nl();
+
+    // Plat
+    add(txt(leftRight("No. Plat", ": "+plat, W))); nl();
+
+    nl(); nl();
+
+    // Footer
+    add(ALIGN_CENTER);
+    add(txt("* Terima kasih *")); nl();
+    add(txt("Selamat berkendara aman")); nl();
+
+    nl(); nl(); nl();
+
+    // Cut
+    add(CUT);
+
+    // Kirim ke printer
+    const data = new Uint8Array(cmds);
+    await writeChunk(data);
+
+    btn.textContent = '✓ Berhasil Dicetak!';
+    setTimeout(() => {
+      btn.textContent = '🖨 Cetak Struk';
+      btn.disabled = false;
+    }, 2000);
+
+  } catch(err) {
+    btn.textContent = '✗ Gagal — Coba Lagi';
+    btn.disabled = false;
+    alert('Gagal cetak: ' + err.message);
+    console.error(err);
+  }
+}
+
+/* ── LOGO UPLOAD & ESC/POS BITMAP ── */
+let logoDataUrl = null;
+
+function loadLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    logoDataUrl = e.target.result;
+
+    // Preview di receipt
+    const imgPrev = document.getElementById('r_logo_preview');
+    const txtPrev = document.getElementById('r_logo_text');
+    imgPrev.src = logoDataUrl;
+    imgPrev.style.display = 'block';
+    txtPrev.style.display = 'none';
+
+    // Preview di form
+    const formPrev = document.getElementById('logo_preview');
+    const formImg  = document.getElementById('logo_img_preview');
+    formPrev.style.display = 'block';
+    formImg.src = logoDataUrl;
+
+    // Konversi ke ESC/POS bitmap
+    convertLogoToEscPos(logoDataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+function convertLogoToEscPos(dataUrl) {
+  const img = new Image();
+  img.onload = function() {
+    // Max lebar 384px (58mm @ 203dpi), scale proportional, max tinggi 100px
+    const MAX_W = 384;
+    const MAX_H = 100;
+    let w = img.width;
+    let h = img.height;
+
+    if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+    if (h > MAX_H) { w = Math.round(w * MAX_H / h); h = MAX_H; }
+
+    // Pastikan lebar kelipatan 8
+    w = Math.ceil(w / 8) * 8;
+
+    const canvas = document.getElementById('logo_canvas');
+    canvas.width  = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    // Background putih dulu
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const pixels    = imageData.data;
+
+    // Update info
+    document.getElementById('logo_info').textContent = w + 'x' + h + 'px → siap cetak';
+
+    // Konversi ke 1-bit: tiap 8 pixel = 1 byte
+    const bytesPerRow = w / 8;
+    const rowData = [];
+
+    for (let y = 0; y < h; y++) {
+      const row = [];
+      for (let byteX = 0; byteX < bytesPerRow; byteX++) {
+        let byte = 0;
+        for (let bit = 0; bit < 8; bit++) {
+          const px = (byteX * 8) + bit;
+          const idx = (y * w + px) * 4;
+          const r = pixels[idx];
+          const g = pixels[idx + 1];
+          const b = pixels[idx + 2];
+          // Luminance threshold: < 128 = hitam = dot ON
+          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          if (lum < 128) byte |= (0x80 >> bit);
+        }
+        row.push(byte);
+      }
+      rowData.push(row);
+    }
+
+    // Build ESC/POS GS v 0 command (raster bitmap) — dengan padding kiri supaya rata tengah
+    // Lebar kertas 58mm @ 203dpi = 384 dot = 48 byte per baris
+    const PAPER_BYTES = 48;
+    const padLeft  = Math.max(0, Math.floor((PAPER_BYTES - bytesPerRow) / 2));
+    const totalBytesPerRow = padLeft + bytesPerRow;
+
+    const m    = 0;
+    const xL   = totalBytesPerRow & 0xFF;
+    const xH   = (totalBytesPerRow >> 8) & 0xFF;
+    const yL   = h & 0xFF;
+    const yH   = (h >> 8) & 0xFF;
+
+    const header = [0x1D, 0x76, 0x30, m, xL, xH, yL, yH];
+    const allBytes = [...header];
+
+    // Tiap baris: padding (byte 0x00 = putih) + data logo
+    for (const row of rowData) {
+      for (let p = 0; p < padLeft; p++) allBytes.push(0x00); // padding kiri (putih)
+      allBytes.push(...row);
+    }
+
+    // Simpan ke global, dibagi chunks 512 byte
+    window._logoEscPos = [];
+    const CHUNK = 512;
+    for (let i = 0; i < allBytes.length; i += CHUNK) {
+      window._logoEscPos.push(allBytes.slice(i, i + CHUNK));
+    }
+
+    console.log('Logo ESC/POS ready:', allBytes.length, 'bytes,', w+'x'+h+'px');
+  };
+  img.src = dataUrl;
+}
+
+// Set default datetime to now
+const now = new Date();
+now.setSeconds(0, 0);
+const pad = n => String(n).padStart(2,'0');
+const local = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate())
+  + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes());
+document.getElementById("waktu").value = local;
+generateNota();
+
+</script>
+</body>
+</html>
