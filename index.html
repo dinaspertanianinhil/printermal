@@ -445,34 +445,156 @@ body {
   letter-spacing: 0.3px;
 }
 
+/* ── PRINT TIPS ── */
+.print-tips {
+  margin-top: 14px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(232,196,74,0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.tips-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.print-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.print-tips li {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding-left: 12px;
+  position: relative;
+}
+
+.print-tips li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.print-tips strong {
+  color: var(--text);
+}
+
 /* ── PRINT ── */
 @media print {
-  body {
-    background: white;
-    padding: 0;
-  }
-  .header, .panel, .stats-row, .receipt-header, .receipt-label,
-  .live-badge { display: none !important; }
 
-  .container {
-    display: block;
-  }
-
-  .receipt-card {
-    background: white;
-    border: none;
-    padding: 0;
-    box-shadow: none;
-  }
-
-  .receipt {
-    box-shadow: none;
-    font-size: 10px;
+  /* Paksa warna hitam-putih, tidak ada background gelap */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
   @page {
     size: 58mm auto;
-    margin: 0;
+    margin: 0mm;
+  }
+
+  /* Sembunyikan semua UI kecuali struk */
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .header,
+  .panel,
+  .stats-row,
+  .receipt-header,
+  .receipt-label,
+  .live-badge,
+  .receipt-wrapper > .receipt-header,
+  .receipt-wrapper > .stats-row {
+    display: none !important;
+  }
+
+  .container {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .receipt-wrapper {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Wrapper kartu struk */
+  .receipt-card {
+    background: white !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* Struk thermal itu sendiri */
+  .receipt {
+    width: 54mm !important;          /* sedikit lebih kecil dari 58mm agar ada margin kiri */
+    margin: 0 auto !important;
+    padding: 4mm 3mm 20mm !important;
+    background: white !important;
+    color: black !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 8pt !important;
+    line-height: 1.25 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  /* Hapus efek torn paper saat print */
+  .receipt::before,
+  .receipt::after {
+    display: none !important;
+  }
+
+  /* Paksa warna teks hitam semua */
+  .receipt,
+  .receipt * {
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Total box tetap pakai background abu muda */
+  .r-total-box {
+    background: #eeeeee !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Divider tetap tercetak */
+  .r-divider {
+    border-top: 1px dashed #555 !important;
+  }
+
+  .r-cash-row {
+    border-top: 1px solid #555 !important;
+    border-bottom: 1px solid #555 !important;
+  }
+
+  /* Logo tetap tercetak */
+  .r-logo img {
+    width: 50px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 
@@ -581,10 +703,22 @@ body {
       <button class="btn btn-primary" onclick="generateNota()">
         ↻ Generate Nota
       </button>
-      <button class="btn btn-secondary" onclick="window.print()">
+      <button class="btn btn-secondary" onclick="printNota()">
         ⎙ Print Nota
       </button>
     </div>
+
+    <div class="print-tips">
+      <div class="tips-title">⚙ Pengaturan Print Thermal</div>
+      <ul>
+        <li>Ukuran kertas: <strong>58mm</strong> (Roll)</li>
+        <li>Margin: <strong>None / Tanpa Batas</strong></li>
+        <li>Skala: <strong>100%</strong> (jangan "Fit to page")</li>
+        <li>Matikan <strong>Header & Footer</strong> browser</li>
+        <li>Background graphics: <strong>OFF</strong></li>
+      </ul>
+    </div>
+
   </div>
 
   <!-- PREVIEW -->
@@ -758,6 +892,12 @@ function generateNota() {
   set("s_volume", volume ? parseFloat(volume).toFixed(2) : "—");
   set("s_harga",  harga  ? rupiah(harga)                 : "—");
   set("s_total",  total  ? rupiah(total)                 : "—");
+}
+
+function printNota() {
+  // Pastikan nota sudah digenerate sebelum print
+  generateNota();
+  setTimeout(() => window.print(), 100);
 }
 
 // Set default datetime to now
