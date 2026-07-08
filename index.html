@@ -388,9 +388,9 @@ body {
   font-weight: 700;
 }
 
-/* CASH / CHANGE block — stacked label above amount, like a real printout */
+/* CASH / CHANGE block — stacked label above amount, right-aligned like a real printout */
 .r-cash-block {
-  text-align: left;
+  text-align: right;
   font-weight: 700;
   font-size: 12px;
   margin: 2px 0;
@@ -941,7 +941,8 @@ body {
 
         <hr class="r-dash">
 
-        <div class="r-footer" id="r_footer">Terima kasih atas kunjungan Anda</div>
+        <div class="r-footer" id="r_footer">Terima kasih atas kunjungan Anda
+Anda mendapat subsidi dari Pemerintah sebesar Rp 0 (Perhitungan Subsidi Unaudited atau Estimasi), Gunakan BBM Subsidi secara bijak.</div>
 
       </div>
     </div>
@@ -1044,7 +1045,10 @@ function updateReceipt() {
 
   // Plat & footer
   set('r_plat', document.getElementById('plat').value || '-');
-  set('r_footer', document.getElementById('footer_msg').value || 'Terima kasih atas kunjungan Anda');
+  const footerLine1 = document.getElementById('footer_msg').value || 'Terima kasih atas kunjungan Anda';
+  const footerLine2 = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
+    ' (Perhitungan Subsidi Unaudited atau Estimasi), Gunakan BBM Subsidi secara bijak.';
+  set('r_footer', footerLine1 + '\n' + footerLine2);
 
   // Stats
   set('s_volume', calc.volume.toFixed(2));
@@ -1191,6 +1195,23 @@ function leftRight(left, right, width = 32) {
 
 function dashedLine(width = 32) { return '-'.repeat(width); }
 
+function wrapText(text, width = 32) {
+  const words = text.split(' ');
+  const lines = [];
+  let current = '';
+  for (const word of words) {
+    const test = current ? current + ' ' + word : word;
+    if (test.length > width) {
+      if (current) lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
 async function writeChunk(data) {
   const CHUNK = 100;
   for (let i = 0; i < data.length; i += CHUNK) {
@@ -1222,10 +1243,12 @@ async function printEscPos() {
     const operator    = document.getElementById('operator').value    || '-';
     const produk      = document.getElementById('produk').value      || '-';
     const plat        = document.getElementById('plat').value        || '-';
-    const footerMsg   = document.getElementById('footer_msg').value  || 'Terima kasih atas kunjungan Anda';
+    const footerLine1 = document.getElementById('footer_msg').value  || 'Terima kasih atas kunjungan Anda';
     const waktuStr    = formatWaktu(document.getElementById('waktu').value);
 
     const calc = calculatePrice();
+    const footerLine2 = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
+      ' (Perhitungan Subsidi Unaudited atau Estimasi), Gunakan BBM Subsidi secara bijak.';
     const W = 32;
     const rp = n => formatRupiah(n);
 
@@ -1306,7 +1329,8 @@ async function printEscPos() {
 
     // Footer
     add(ALIGN_CENTER);
-    add(txt(footerMsg)); nl();
+    wrapText(footerLine1, W).forEach(line => { add(txt(line)); nl(); });
+    wrapText(footerLine2, W).forEach(line => { add(txt(line)); nl(); });
 
     nl(); nl(); nl();
     add(CUT);
