@@ -176,6 +176,30 @@ body {
   cursor: pointer;
 }
 
+.field input[type="file"] {
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.field input[type="file"]::file-selector-button {
+  background: var(--accent);
+  color: #0f1117;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.logo-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 /* ── BUTTONS ── */
 .btn-group {
   display: grid;
@@ -278,48 +302,26 @@ body {
   50% { opacity: 0.5; transform: scale(0.8); }
 }
 
-/* ── RECEIPT CARD ── */
+/* ── RECEIPT CARD (frame around the paper, not part of the "paper" itself) ── */
 .receipt-card {
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 24px 12px;
   display: flex;
   justify-content: center;
 }
 
-/* ── THERMAL RECEIPT ── */
+/* ── THERMAL RECEIPT — mimics real 58mm thermal paper output ── */
+/* No card look, no shadow, no rounded corners, no gradients: flat black-on-white like a real printout */
 .receipt {
-  width: 210px;
-  background: #fff;
-  color: #111;
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
-  font-size: 9.5px;
-  line-height: 1.3;
-  padding: 12px 10px 30px;
-  border-radius: 4px;
-  position: relative;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
-
-/* Torn top edge */
-.receipt::before {
-  content: '';
-  display: block;
-  height: 6px;
-  background: repeating-linear-gradient(90deg, #fff 0 4px, transparent 4px 8px);
-  margin: -12px -10px 10px;
-  border-top: 1px dashed #ccc;
-}
-
-/* Torn bottom edge */
-.receipt::after {
-  content: '';
-  display: block;
-  height: 6px;
-  background: repeating-linear-gradient(90deg, #fff 0 4px, transparent 4px 8px);
-  margin: 20px -10px -30px;
-  border-bottom: 1px dashed #ccc;
+  width: 220px;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Courier New', 'Courier Prime', monospace;
+  font-size: 10.5px;
+  line-height: 1.45;
+  padding: 10px 8px;
 }
 
 .r-center { text-align: center; }
@@ -327,93 +329,84 @@ body {
 .r-logo {
   display: flex;
   justify-content: center;
-  margin-bottom: 4px;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .r-logo img {
-  width: 64px;
+  max-width: 110px;
+  max-height: 60px;
+  width: auto;
+  height: auto;
   object-fit: contain;
+  display: block;
 }
 
 .r-title {
   font-weight: 700;
-  font-size: 11px;
+  font-size: 11.5px;
+  letter-spacing: 0.3px;
 }
 
 .r-sub {
-  font-size: 8.5px;
-  color: #444;
+  font-size: 10px;
 }
 
-.r-divider {
+.r-dash {
   border: none;
-  border-top: 1px dashed #999;
+  border-top: 1px dashed #000;
   margin: 6px 0;
+  height: 0;
+}
+
+.r-section-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  letter-spacing: 0.2px;
 }
 
 .r-row {
   display: flex;
   justify-content: space-between;
-  gap: 4px;
-  margin-bottom: 2px;
+  gap: 6px;
 }
 
 .r-key {
-  color: #555;
   white-space: nowrap;
 }
 
 .r-val {
   text-align: right;
-  font-weight: 600;
   word-break: break-word;
 }
 
-.r-block {
-  margin-bottom: 2px;
-}
-
-.r-block .r-key { display: block; color: #555; font-size: 8.5px; }
-.r-block .r-val { display: block; font-weight: 600; }
-
-.r-total-box {
-  background: #f3f3f3;
-  padding: 5px 7px;
-  margin: 6px 0;
-  border-radius: 3px;
-}
-
-.r-total-label {
-  font-size: 8px;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.r-total-amount {
-  font-size: 14px;
+.r-row.bold .r-key,
+.r-row.bold .r-val {
   font-weight: 700;
-  letter-spacing: -0.5px;
 }
 
-.r-cash-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  margin: 4px 0;
+/* CASH / CHANGE block — stacked label above amount, like a real printout */
+.r-cash-block {
+  text-align: left;
   font-weight: 700;
+  font-size: 12px;
+  margin: 2px 0;
+}
+
+.r-cash-block .r-cash-label {
   font-size: 10px;
+  letter-spacing: 0.5px;
 }
 
 .r-footer {
   text-align: center;
-  font-size: 8px;
-  color: #777;
+  font-size: 9.5px;
   margin-top: 8px;
   line-height: 1.5;
+  white-space: pre-line;
 }
 
 /* ── STATS ── */
@@ -489,10 +482,9 @@ body {
   color: var(--text);
 }
 
-/* ── PRINT ── */
+/* ── PRINT (browser / USB thermal driver, 58mm) ── */
 @media print {
 
-  /* Paksa warna hitam-putih, tidak ada background gelap */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -504,7 +496,6 @@ body {
     margin: 0mm;
   }
 
-  /* Sembunyikan semua UI kecuali struk */
   body {
     background: white !important;
     margin: 0 !important;
@@ -516,9 +507,7 @@ body {
   .stats-row,
   .receipt-header,
   .receipt-label,
-  .live-badge,
-  .receipt-wrapper > .receipt-header,
-  .receipt-wrapper > .stats-row {
+  .live-badge {
     display: none !important;
   }
 
@@ -535,7 +524,6 @@ body {
     padding: 0 !important;
   }
 
-  /* Wrapper kartu struk */
   .receipt-card {
     background: white !important;
     border: none !important;
@@ -546,53 +534,30 @@ body {
     margin: 0 !important;
   }
 
-  /* Struk thermal itu sendiri */
   .receipt {
-    width: 54mm !important;          /* sedikit lebih kecil dari 58mm agar ada margin kiri */
+    width: 54mm !important;
     margin: 0 auto !important;
-    padding: 4mm 3mm 20mm !important;
+    padding: 3mm 2mm !important;
     background: white !important;
     color: black !important;
     font-family: 'Courier New', monospace !important;
-    font-size: 8pt !important;
-    line-height: 1.25 !important;
-    border-radius: 0 !important;
+    font-size: 9pt !important;
+    line-height: 1.35 !important;
     box-shadow: none !important;
     page-break-inside: avoid;
   }
 
-  /* Hapus efek torn paper saat print */
-  .receipt::before,
-  .receipt::after {
-    display: none !important;
-  }
-
-  /* Paksa warna teks hitam semua */
   .receipt,
   .receipt * {
     color: black !important;
     background: white !important;
   }
 
-  /* Total box tetap pakai background abu muda */
-  .r-total-box {
-    background: #eeeeee !important;
-    border: 1px solid #ccc !important;
+  .r-dash {
+    border-top: 1px dashed black !important;
   }
 
-  /* Divider tetap tercetak */
-  .r-divider {
-    border-top: 1px dashed #555 !important;
-  }
-
-  .r-cash-row {
-    border-top: 1px solid #555 !important;
-    border-bottom: 1px solid #555 !important;
-  }
-
-  /* Logo tetap tercetak */
   .r-logo img {
-    width: 50px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -637,6 +602,25 @@ body {
   background: #3de060;
   transform: translateY(-1px);
   box-shadow: 0 4px 20px rgba(78,203,113,0.3);
+}
+
+.btn-print-browser {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-print-browser:hover {
+  background: var(--border);
 }
 
 .bt-status {
@@ -684,28 +668,38 @@ body {
   <div class="panel">
     <div class="panel-title">Form Input Transaksi</div>
 
+    <!-- LOGO -->
+    <div class="section-group">
+      <div class="section-label">Logo Struk</div>
+      <div class="field">
+        <label>Upload Logo (opsional)</label>
+        <input type="file" id="logoInput" accept="image/*">
+        <div class="logo-hint">Jika tidak diupload, logo Pertamina default akan digunakan.</div>
+      </div>
+    </div>
+
     <!-- SPBU INFO -->
     <div class="section-group">
       <div class="section-label">Informasi SPBU</div>
 
       <div class="field">
-        <label>Nama / ID SPBU</label>
-        <input type="text" id="spbu_id" placeholder="cth: 13292630" oninput="generateNota()">
+        <label>ID SPBU</label>
+        <input type="text" id="spbu_id" placeholder="cth: 13292630" oninput="updateReceipt()">
       </div>
 
       <div class="field">
         <label>Nama SPBU</label>
-        <input type="text" id="spbu_nama" placeholder="cth: SPBU 13292630" oninput="generateNota()">
+        <input type="text" id="spbu_nama" placeholder="cth: SPBU 13292630" oninput="updateReceipt()">
       </div>
 
       <div class="field">
         <label>Alamat</label>
-        <input type="text" id="spbu_alamat" placeholder="cth: Jl. Raya No.1, Batam" oninput="generateNota()">
+        <input type="text" id="spbu_alamat" placeholder="cth: Jl. Raya No.1, Batam" oninput="updateReceipt()">
       </div>
 
       <div class="field">
         <label>No. Telepon</label>
-        <input type="text" id="spbu_telp" placeholder="cth: +6261 4552422" oninput="generateNota()">
+        <input type="text" id="spbu_telp" placeholder="cth: +6261 4552422" oninput="updateReceipt()">
       </div>
     </div>
 
@@ -716,60 +710,80 @@ body {
       <div class="field-row">
         <div class="field">
           <label>Shift</label>
-          <input type="text" id="shift" placeholder="1" oninput="generateNota()">
+          <input type="text" id="shift" placeholder="1" oninput="updateReceipt()">
         </div>
         <div class="field">
           <label>No. Transaksi</label>
-          <input type="text" id="trans" placeholder="1324747" oninput="generateNota()">
+          <input type="text" id="trans" placeholder="1324747" oninput="updateReceipt()">
         </div>
       </div>
 
       <div class="field">
         <label>Waktu Transaksi</label>
-        <input type="datetime-local" id="waktu" oninput="generateNota()">
+        <input type="datetime-local" id="waktu" oninput="updateReceipt()">
       </div>
 
       <div class="field-row">
         <div class="field">
           <label>Pulau / Pompa</label>
-          <input type="text" id="pulau" placeholder="1" oninput="generateNota()">
+          <input type="text" id="pulau" placeholder="1" oninput="updateReceipt()">
         </div>
         <div class="field">
           <label>Operator</label>
-          <input type="text" id="operator" placeholder="Nama Operator" oninput="generateNota()">
+          <input type="text" id="operator" placeholder="Nama Operator" oninput="updateReceipt()">
         </div>
       </div>
     </div>
 
-    <!-- PRODUK -->
+    <!-- PRODUK & HARGA -->
     <div class="section-group">
       <div class="section-label">Produk & Harga</div>
 
       <div class="field">
-        <label>Nama Produk</label>
-        <input type="text" id="produk" placeholder="cth: PERTAMINA DEX" oninput="generateNota()">
+        <label>Jenis BBM</label>
+        <input type="text" id="produk" placeholder="cth: PERTAMINA DEX" oninput="updateReceipt()">
       </div>
 
       <div class="field-row">
         <div class="field">
-          <label>Harga / Liter (Rp)</label>
-          <input type="number" id="harga" placeholder="29100" oninput="generateNota()">
+          <label>Harga Non Subsidi (Rp/L)</label>
+          <input type="number" id="harga_non_subsidi" placeholder="12718" oninput="updateReceipt()">
         </div>
         <div class="field">
-          <label>Volume (Liter)</label>
-          <input type="number" step="0.01" id="volume" placeholder="34.39" oninput="generateNota()">
+          <label>Harga Jual (Rp/L)</label>
+          <input type="number" id="harga_jual" placeholder="6800" oninput="updateReceipt()">
         </div>
       </div>
 
       <div class="field">
+        <label>Volume (Liter)</label>
+        <input type="number" step="0.01" id="volume" placeholder="34.39" oninput="updateReceipt()">
+      </div>
+    </div>
+
+    <!-- PEMBAYARAN -->
+    <div class="section-group">
+      <div class="section-label">Pembayaran</div>
+
+      <div class="field">
+        <label>Cash</label>
+        <input type="number" id="cash" placeholder="300000" oninput="updateReceipt()">
+      </div>
+
+      <div class="field">
         <label>No. Plat Kendaraan</label>
-        <input type="text" id="plat" placeholder="cth: BM 1234 AB" oninput="generateNota()">
+        <input type="text" id="plat" placeholder="cth: BM 1234 AB" oninput="updateReceipt()">
+      </div>
+
+      <div class="field">
+        <label>Pesan Footer</label>
+        <input type="text" id="footer_msg" placeholder="Terima kasih atas kunjungan Anda" oninput="updateReceipt()">
       </div>
     </div>
 
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="generateNota()">
-        ↻ Generate
+      <button class="btn btn-primary" onclick="updateReceipt()">
+        ↻ Refresh
       </button>
       <button class="btn btn-bt" id="btnConnect" onclick="connectBluetooth()">
         📶 Konek BT
@@ -782,7 +796,11 @@ body {
     </div>
 
     <button class="btn btn-print" id="btnPrint" onclick="printEscPos()" disabled>
-      🖨 Cetak Struk
+      🖨 Cetak via Bluetooth
+    </button>
+
+    <button class="btn-print-browser" onclick="printReceipt()">
+      🖶 Cetak via Browser / USB (58mm)
     </button>
 
     <div class="print-tips">
@@ -790,8 +808,9 @@ body {
       <ul>
         <li>Pastikan printer thermal sudah <strong>ON &amp; Bluetooth aktif</strong></li>
         <li>Tap <strong>Konek BT</strong> → pilih printer dari daftar</li>
-        <li>Setelah terhubung, tap <strong>Cetak Struk</strong></li>
+        <li>Setelah terhubung, tap <strong>Cetak via Bluetooth</strong></li>
         <li>Gunakan <strong>Chrome Android</strong> (Web Bluetooth tidak support Firefox/Safari)</li>
+        <li>Untuk printer USB/kabel, gunakan tombol <strong>Cetak via Browser</strong></li>
       </ul>
     </div>
 
@@ -813,22 +832,22 @@ body {
         <div class="stat-label">Liter</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="s_harga">—</div>
-        <div class="stat-label">Harga/L</div>
+        <div class="stat-value" id="s_total">—</div>
+        <div class="stat-label">Dibayar (Rp)</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="s_total">—</div>
-        <div class="stat-label">Total (Rp)</div>
+        <div class="stat-value" id="s_change">—</div>
+        <div class="stat-label">Kembalian (Rp)</div>
       </div>
     </div>
 
     <div class="receipt-card">
 
       <!-- THERMAL RECEIPT -->
-      <div class="receipt">
+      <div class="receipt" id="receiptPaper">
 
-        <div class="r-logo r-center">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgIKihJed_teJrbbeqUzgYh-9dNXDQBeQ3yA&s" alt="Pertamina">
+        <div class="r-logo">
+          <img id="logoImg" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgIKihJed_teJrbbeqUzgYh-9dNXDQBeQ3yA&s" alt="Logo SPBU">
         </div>
 
         <div class="r-center r-title" id="r_spbu_id">13292630</div>
@@ -836,7 +855,7 @@ body {
         <div class="r-center r-sub" id="r_spbu_alamat">Tempuling, Kec Tempuling Riau</div>
         <div class="r-center r-sub" id="r_spbu_telp">Telp. +6261 4552422</div>
 
-        <hr class="r-divider">
+        <hr class="r-dash">
 
         <div class="r-row">
           <span class="r-key">Shift</span>
@@ -851,50 +870,78 @@ body {
           <span class="r-val" id="r_waktu">06/05/2026 10:50:17</span>
         </div>
 
-        <hr class="r-divider">
+        <hr class="r-dash">
 
         <div class="r-row">
           <span class="r-key">Pulau/Pompa</span>
           <span class="r-val" id="r_pulau">1</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Produk</span>
-          <span class="r-val" id="r_produk">PERTAMINA_DEX</span>
+          <span class="r-key">Operator</span>
+          <span class="r-val" id="r_operator">-</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Harga/L</span>
-          <span class="r-val">Rp <span id="r_harga">29,100</span></span>
+          <span class="r-key">Jenis BBM</span>
+          <span class="r-val" id="r_produk">-</span>
         </div>
         <div class="r-row">
           <span class="r-key">Volume</span>
-          <span class="r-val"><span id="r_volume">34.39</span> L</span>
+          <span class="r-val" id="r_volume">0.00 L</span>
+        </div>
+
+        <hr class="r-dash">
+
+        <div class="r-section-title">Informasi Harga BBM (Rp/Liter)</div>
+        <div class="r-row">
+          <span class="r-key">Harga Non Subsidi</span>
+          <span class="r-val" id="r_harga_non">0</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Operator</span>
-          <span class="r-val" id="r_operator">RAFLYATULLAH</span>
+          <span class="r-key">Subsidi Pemerintah</span>
+          <span class="r-val" id="r_subsidi_liter">0</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Harga Jual</span>
+          <span class="r-val" id="r_harga_jual">0</span>
         </div>
 
-        <div class="r-total-box">
-          <div class="r-total-label">Total Harga</div>
-          <div class="r-total-amount">Rp <span id="r_total">1,000,749</span></div>
+        <hr class="r-dash">
+
+        <div class="r-section-title">Total Penjualan (Rp)</div>
+        <div class="r-row">
+          <span class="r-key">Tanpa Subsidi</span>
+          <span class="r-val" id="r_tanpa_subsidi">0</span>
+        </div>
+        <div class="r-row">
+          <span class="r-key">Subsidi Pemerintah</span>
+          <span class="r-val" id="r_subsidi_total">0</span>
+        </div>
+        <div class="r-row bold">
+          <span class="r-key">Dibayar Konsumen</span>
+          <span class="r-val" id="r_dibayar">0</span>
         </div>
 
-        <div class="r-cash-row">
-          <span>CASH</span>
-          <span id="r_cash">Rp 1,000,749</span>
+        <hr class="r-dash">
+
+        <div class="r-cash-block">
+          <div class="r-cash-label">CASH</div>
+          <div id="r_cash">0</div>
+        </div>
+        <div class="r-cash-block" id="row_change" style="display:none;">
+          <div class="r-cash-label">CHANGE</div>
+          <div id="r_change">0</div>
         </div>
 
-        <div style="height:10px;"></div>
+        <hr class="r-dash">
 
         <div class="r-row">
-          <span class="r-key">No. Plat</span>
-          <span class="r-val" id="r_plat">BM1084G</span>
+          <span class="r-key">No Plat</span>
+          <span class="r-val" id="r_plat">-</span>
         </div>
 
-        <div class="r-footer">
-          ★ Terima kasih atas kunjungan Anda ★<br>
-          Selamat berkendara dengan aman
-        </div>
+        <hr class="r-dash">
+
+        <div class="r-footer" id="r_footer">Terima kasih atas kunjungan Anda</div>
 
       </div>
     </div>
@@ -905,76 +952,137 @@ body {
 
 <script>
 
-function rupiah(n) {
-  return new Intl.NumberFormat('id-ID').format(Math.round(n));
+/* ══════════════════════════════════════════
+   FORMAT
+   ══════════════════════════════════════════ */
+function formatRupiah(n) {
+  n = Number(n) || 0;
+  return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Math.round(n));
 }
 
-function generateNota() {
+function formatWaktu(waktuValue) {
+  if (!waktuValue) return '—';
+  const d = new Date(waktuValue);
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' +
+         p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
 
-  const shift    = document.getElementById("shift").value;
-  const trans    = document.getElementById("trans").value;
-  const waktu    = document.getElementById("waktu").value;
-  const pulau    = document.getElementById("pulau").value;
-  const produk   = document.getElementById("produk").value;
-  const harga    = parseFloat(document.getElementById("harga").value) || 0;
-  const volume   = parseFloat(document.getElementById("volume").value) || 0;
-  const operator = document.getElementById("operator").value;
-  const plat     = document.getElementById("plat").value;
+/* ══════════════════════════════════════════
+   PERHITUNGAN OTOMATIS
+   ══════════════════════════════════════════ */
+function calculatePrice() {
+  const hargaNonSubsidi = parseFloat(document.getElementById('harga_non_subsidi').value) || 0;
+  const hargaJual       = parseFloat(document.getElementById('harga_jual').value) || 0;
+  const volume           = parseFloat(document.getElementById('volume').value) || 0;
+  const cash              = parseFloat(document.getElementById('cash').value) || 0;
 
-  const spbu_id    = document.getElementById("spbu_id").value;
-  const spbu_nama  = document.getElementById("spbu_nama").value;
-  const spbu_alamat= document.getElementById("spbu_alamat").value;
-  const spbu_telp  = document.getElementById("spbu_telp").value;
+  const subsidiPerLiter  = hargaNonSubsidi - hargaJual;
+  const tanpaSubsidi      = hargaNonSubsidi * volume;
+  const subsidiTotal      = subsidiPerLiter * volume;
+  const dibayarKonsumen  = hargaJual * volume;
 
-  const total = harga * volume;
+  let change = cash - dibayarKonsumen;
+  if (change < 0) change = 0;
+  const showChange = cash > 0 && cash > dibayarKonsumen;
 
-  // Format waktu
-  let waktuFormat = "—";
-  if (waktu) {
-    const d = new Date(waktu);
-    waktuFormat =
-      String(d.getDate()).padStart(2,'0') + "/" +
-      String(d.getMonth()+1).padStart(2,'0') + "/" +
-      d.getFullYear() + " " +
-      String(d.getHours()).padStart(2,'0') + ":" +
-      String(d.getMinutes()).padStart(2,'0') + ":" +
-      String(d.getSeconds()).padStart(2,'0');
-  }
+  return {
+    hargaNonSubsidi, hargaJual, volume, cash,
+    subsidiPerLiter, tanpaSubsidi, subsidiTotal, dibayarKonsumen,
+    change, showChange
+  };
+}
 
-  // Receipt fields
+/* ══════════════════════════════════════════
+   UPDATE PREVIEW (REALTIME, TANPA TOMBOL)
+   ══════════════════════════════════════════ */
+function updateReceipt() {
+  const calc = calculatePrice();
+
   const set = (id, val) => {
     const el = document.getElementById(id);
-    if (el) el.innerText = val;
+    if (el) el.textContent = val;
   };
 
-  set("r_spbu_id",     spbu_id     || "13292630");
-  set("r_spbu_nama",   spbu_nama   || "SPBU 13292630");
-  set("r_spbu_alamat", spbu_alamat || "Tempuling, Kec Tempuling Riau");
-  set("r_spbu_telp",   spbu_telp ? "Telp. " + spbu_telp : "Telp. +6261 4552422");
+  // Info SPBU
+  set('r_spbu_id',     document.getElementById('spbu_id').value     || '-');
+  set('r_spbu_nama',   document.getElementById('spbu_nama').value   || '-');
+  set('r_spbu_alamat', document.getElementById('spbu_alamat').value || '-');
+  const telp = document.getElementById('spbu_telp').value;
+  set('r_spbu_telp', telp ? 'Telp. ' + telp : 'Telp. -');
 
-  set("r_shift",    shift    || "—");
-  set("r_trans",    trans    || "—");
-  set("r_waktu",    waktuFormat);
-  set("r_pulau",    pulau    || "—");
-  set("r_produk",   produk   || "—");
-  set("r_harga",    harga ? rupiah(harga) : "—");
-  set("r_volume",   volume ? parseFloat(volume).toFixed(2) : "—");
-  set("r_operator", operator || "—");
-  set("r_plat",     plat     || "—");
-  set("r_total",    total ? rupiah(total) : "—");
-  set("r_cash",     total ? "Rp " + rupiah(total) : "—");
+  // Transaksi
+  set('r_shift', document.getElementById('shift').value || '-');
+  set('r_trans', document.getElementById('trans').value || '-');
+  set('r_waktu', formatWaktu(document.getElementById('waktu').value));
 
-  // Stats cards
-  set("s_volume", volume ? parseFloat(volume).toFixed(2) : "—");
-  set("s_harga",  harga  ? rupiah(harga)                 : "—");
-  set("s_total",  total  ? rupiah(total)                 : "—");
+  // Produk
+  set('r_pulau',    document.getElementById('pulau').value    || '-');
+  set('r_operator', document.getElementById('operator').value || '-');
+  set('r_produk',   document.getElementById('produk').value   || '-');
+  set('r_volume',   calc.volume.toFixed(2) + ' L');
+
+  // Informasi harga BBM
+  set('r_harga_non',      formatRupiah(calc.hargaNonSubsidi));
+  set('r_subsidi_liter',  formatRupiah(calc.subsidiPerLiter));
+  set('r_harga_jual',     formatRupiah(calc.hargaJual));
+
+  // Total penjualan
+  set('r_tanpa_subsidi', formatRupiah(calc.tanpaSubsidi));
+  set('r_subsidi_total', formatRupiah(calc.subsidiTotal));
+  set('r_dibayar',        formatRupiah(calc.dibayarKonsumen));
+
+  // Cash / Change
+  set('r_cash', formatRupiah(calc.cash));
+  const changeRow = document.getElementById('row_change');
+  if (calc.showChange) {
+    changeRow.style.display = '';
+    set('r_change', formatRupiah(calc.change));
+  } else {
+    changeRow.style.display = 'none';
+  }
+
+  // Plat & footer
+  set('r_plat', document.getElementById('plat').value || '-');
+  set('r_footer', document.getElementById('footer_msg').value || 'Terima kasih atas kunjungan Anda');
+
+  // Stats
+  set('s_volume', calc.volume.toFixed(2));
+  set('s_total',  formatRupiah(calc.dibayarKonsumen));
+  set('s_change', calc.showChange ? formatRupiah(calc.change) : '0');
 }
 
-/* ── BLUETOOTH ESC/POS ── */
+/* ══════════════════════════════════════════
+   UPLOAD LOGO
+   ══════════════════════════════════════════ */
+const DEFAULT_LOGO = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgIKihJed_teJrbbeqUzgYh-9dNXDQBeQ3yA&s';
+
+document.getElementById('logoInput').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  const logoImg = document.getElementById('logoImg');
+  if (!file) {
+    logoImg.src = DEFAULT_LOGO;
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = ev => { logoImg.src = ev.target.result; };
+  reader.onerror = () => { logoImg.src = DEFAULT_LOGO; };
+  reader.readAsDataURL(file);
+});
+
+/* ══════════════════════════════════════════
+   PRINT — BROWSER / USB (58mm thermal CSS)
+   ══════════════════════════════════════════ */
+function printReceipt() {
+  window.print();
+}
+
+/* ══════════════════════════════════════════
+   BLUETOOTH ESC/POS
+   ══════════════════════════════════════════ */
 let btDevice = null;
 let btChar   = null;
 
-// UUID ESC/POS Serial Port Service (standard untuk kebanyakan thermal printer BT)
 const SERIAL_SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
 const SERIAL_CHAR    = '00002af1-0000-1000-8000-00805f9b34fb';
 
@@ -997,16 +1105,15 @@ async function connectBluetooth() {
       acceptAllDevices: true,
       optionalServices: [
         SERIAL_SERVICE,
-        '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Nordic UART
-        '0000ff00-0000-1000-8000-00805f9b34fb', // Generic printer
+        '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+        '0000ff00-0000-1000-8000-00805f9b34fb',
         '000018f0-0000-1000-8000-00805f9b34fb',
       ]
     });
 
     txt.textContent = 'Menghubungkan ke ' + btDevice.name + '...';
-    const server  = await btDevice.gatt.connect();
+    const server = await btDevice.gatt.connect();
 
-    // Coba beberapa service UUID umum printer thermal
     const serviceUUIDs = [
       SERIAL_SERVICE,
       '49535343-fe7d-4ae5-8fa9-9fafd205e455',
@@ -1026,16 +1133,15 @@ async function connectBluetooth() {
         for (const chUUID of charUUIDs) {
           try {
             btChar = await service.getCharacteristic(chUUID);
-            found  = true;
+            found = true;
             break;
-          } catch(e) {}
+          } catch (e) {}
         }
         if (found) break;
-      } catch(e) {}
+      } catch (e) {}
     }
 
     if (!found) {
-      // Fallback: ambil semua services dan cari characteristic writable
       const services = await server.getPrimaryServices();
       outer:
       for (const svc of services) {
@@ -1067,31 +1173,23 @@ async function connectBluetooth() {
       btChar = null;
     });
 
-  } catch(err) {
+  } catch (err) {
     dot.className   = 'bt-dot-err';
     txt.textContent = 'Gagal: ' + err.message;
     console.error(err);
   }
 }
 
-/* ── ESC/POS builder ── */
-function esc(...bytes) { return new Uint8Array(bytes); }
-
 function textToBytes(str) {
-  return new TextEncoder().encode(str);
+  return [...new TextEncoder().encode(str)];
 }
 
-function center(text, width=32) {
-  const pad = Math.max(0, Math.floor((width - text.length) / 2));
-  return ' '.repeat(pad) + text;
-}
-
-function leftRight(left, right, width=32) {
+function leftRight(left, right, width = 32) {
   const space = Math.max(1, width - left.length - right.length);
   return left + ' '.repeat(space) + right;
 }
 
-function dashedLine(width=32) { return '-'.repeat(width); }
+function dashedLine(width = 32) { return '-'.repeat(width); }
 
 async function writeChunk(data) {
   const CHUNK = 100;
@@ -1114,49 +1212,36 @@ async function printEscPos() {
   btn.disabled = true;
 
   try {
-    // Ambil data nota
-    const spbu_id    = document.getElementById("spbu_id").value    || "13292630";
-    const spbu_nama  = document.getElementById("spbu_nama").value  || "SPBU 13292630";
-    const spbu_alamat= document.getElementById("spbu_alamat").value|| "Tempuling, Kec Tempuling Riau";
-    const spbu_telp  = document.getElementById("spbu_telp").value  || "+6261 4552422";
-    const shift      = document.getElementById("shift").value      || "-";
-    const trans      = document.getElementById("trans").value      || "-";
-    const pulau      = document.getElementById("pulau").value      || "-";
-    const produk     = document.getElementById("produk").value     || "-";
-    const harga      = parseFloat(document.getElementById("harga").value)  || 0;
-    const volume     = parseFloat(document.getElementById("volume").value) || 0;
-    const operator   = document.getElementById("operator").value   || "-";
-    const plat       = document.getElementById("plat").value       || "-";
-    const total      = Math.round(harga * volume);
+    const spbu_id     = document.getElementById('spbu_id').value     || '-';
+    const spbu_nama   = document.getElementById('spbu_nama').value   || '-';
+    const spbu_alamat = document.getElementById('spbu_alamat').value || '-';
+    const spbu_telp   = document.getElementById('spbu_telp').value   || '-';
+    const shift       = document.getElementById('shift').value       || '-';
+    const trans       = document.getElementById('trans').value       || '-';
+    const pulau       = document.getElementById('pulau').value       || '-';
+    const operator    = document.getElementById('operator').value    || '-';
+    const produk      = document.getElementById('produk').value      || '-';
+    const plat        = document.getElementById('plat').value        || '-';
+    const footerMsg   = document.getElementById('footer_msg').value  || 'Terima kasih atas kunjungan Anda';
+    const waktuStr    = formatWaktu(document.getElementById('waktu').value);
 
-    const waktuVal = document.getElementById("waktu").value;
-    let waktuStr = "-";
-    if (waktuVal) {
-      const d = new Date(waktuVal);
-      const p = n => String(n).padStart(2,'0');
-      waktuStr = p(d.getDate())+"/"+p(d.getMonth()+1)+"/"+d.getFullYear()
-               +" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
-    }
+    const calc = calculatePrice();
+    const W = 32;
+    const rp = n => formatRupiah(n);
 
-    const W = 32; // karakter per baris 58mm
-
-    const rp = n => new Intl.NumberFormat('id-ID').format(n);
-
-    // Build ESC/POS command
     const cmds = [];
-
-    const ESC_INIT      = [0x1B,0x40];           // init
-    const ALIGN_CENTER  = [0x1B,0x61,0x01];
-    const ALIGN_LEFT    = [0x1B,0x61,0x00];
-    const BOLD_ON       = [0x1B,0x45,0x01];
-    const BOLD_OFF      = [0x1B,0x45,0x00];
-    const SIZE_NORMAL   = [0x1D,0x21,0x00];
-    const SIZE_DOUBLE   = [0x1D,0x21,0x11];
-    const LF            = [0x0A];
-    const CUT           = [0x1D,0x56,0x41,0x10]; // partial cut
+    const ESC_INIT     = [0x1B, 0x40];
+    const ALIGN_CENTER = [0x1B, 0x61, 0x01];
+    const ALIGN_LEFT   = [0x1B, 0x61, 0x00];
+    const BOLD_ON      = [0x1B, 0x45, 0x01];
+    const BOLD_OFF     = [0x1B, 0x45, 0x00];
+    const SIZE_NORMAL  = [0x1D, 0x21, 0x00];
+    const SIZE_DOUBLE  = [0x1D, 0x21, 0x11];
+    const LF           = [0x0A];
+    const CUT          = [0x1D, 0x56, 0x41, 0x10];
 
     const add = (...parts) => parts.forEach(p => cmds.push(...p));
-    const txt = s => [...textToBytes(s)];
+    const txt = s => textToBytes(s);
     const nl  = () => add(LF);
 
     add(ESC_INIT);
@@ -1167,66 +1252,75 @@ async function printEscPos() {
     add(txt(spbu_nama)); nl();
     add(BOLD_OFF);
     add(txt(spbu_alamat)); nl();
-    add(txt("Telp. " + spbu_telp)); nl();
+    add(txt('Telp. ' + spbu_telp)); nl();
 
     add(ALIGN_LEFT);
     add(txt(dashedLine(W))); nl();
 
-    // Info transaksi
-    add(txt(leftRight("Shift: "+shift, "No.Trans: "+trans, W))); nl();
-    add(txt("Waktu: "+waktuStr)); nl();
-
+    // Transaksi
+    add(txt(leftRight('Shift: ' + shift, 'No.Trans: ' + trans, W))); nl();
+    add(txt('Waktu: ' + waktuStr)); nl();
     add(txt(dashedLine(W))); nl();
 
-    // Detail produk
-    add(txt(leftRight("Pulau/Pompa", ": "+pulau, W))); nl();
-    add(txt(leftRight("Nama Produk", ": "+produk, W))); nl();
-    add(txt(leftRight("Harga/Liter", ": Rp "+rp(harga), W))); nl();
-    add(txt(leftRight("Volume (L)", ": "+volume.toFixed(2), W))); nl();
-    add(txt(leftRight("Operator", ": "+operator, W))); nl();
-
+    // Produk
+    add(txt(leftRight('Pulau/Pompa', ': ' + pulau, W))); nl();
+    add(txt(leftRight('Operator', ': ' + operator, W))); nl();
+    add(txt(leftRight('Jenis BBM', ': ' + produk, W))); nl();
+    add(txt(leftRight('Volume', ': ' + calc.volume.toFixed(2) + ' L', W))); nl();
     add(txt(dashedLine(W))); nl();
 
-    // Total — double size
-    add(ALIGN_CENTER, SIZE_DOUBLE, BOLD_ON);
-    add(txt("Rp "+rp(total))); nl();
-    add(SIZE_NORMAL, BOLD_OFF, ALIGN_LEFT);
-
+    // Informasi harga
+    add(ALIGN_CENTER, BOLD_ON);
+    add(txt('INFO HARGA BBM (Rp/L)')); nl();
+    add(BOLD_OFF, ALIGN_LEFT);
+    add(txt(leftRight('Harga Non Subsidi', rp(calc.hargaNonSubsidi), W))); nl();
+    add(txt(leftRight('Subsidi Pemerintah', rp(calc.subsidiPerLiter), W))); nl();
+    add(txt(leftRight('Harga Jual', rp(calc.hargaJual), W))); nl();
     add(txt(dashedLine(W))); nl();
 
-    // CASH
+    // Total penjualan
+    add(ALIGN_CENTER, BOLD_ON);
+    add(txt('TOTAL PENJUALAN (Rp)')); nl();
+    add(BOLD_OFF, ALIGN_LEFT);
+    add(txt(leftRight('Tanpa Subsidi', rp(calc.tanpaSubsidi), W))); nl();
+    add(txt(leftRight('Subsidi Pemerintah', rp(calc.subsidiTotal), W))); nl();
     add(BOLD_ON);
-    add(txt(leftRight("CASH", "Rp "+rp(total), W))); nl();
+    add(txt(leftRight('Dibayar Konsumen', rp(calc.dibayarKonsumen), W))); nl();
     add(BOLD_OFF);
+    add(txt(dashedLine(W))); nl();
 
-    nl(); nl();
+    // Cash / Change
+    add(BOLD_ON, SIZE_DOUBLE);
+    add(txt('CASH')); nl();
+    add(txt(rp(calc.cash))); nl();
+    if (calc.showChange) {
+      add(txt('CHANGE')); nl();
+      add(txt(rp(calc.change))); nl();
+    }
+    add(SIZE_NORMAL, BOLD_OFF);
+    add(txt(dashedLine(W))); nl();
 
     // Plat
-    add(txt(leftRight("No. Plat", ": "+plat, W))); nl();
-
-    nl(); nl();
+    add(txt(leftRight('No Plat', ': ' + plat, W))); nl();
+    add(txt(dashedLine(W))); nl();
 
     // Footer
     add(ALIGN_CENTER);
-    add(txt("* Terima kasih *")); nl();
-    add(txt("Selamat berkendara aman")); nl();
+    add(txt(footerMsg)); nl();
 
     nl(); nl(); nl();
-
-    // Cut
     add(CUT);
 
-    // Kirim ke printer
     const data = new Uint8Array(cmds);
     await writeChunk(data);
 
     btn.textContent = '✓ Berhasil Dicetak!';
     setTimeout(() => {
-      btn.textContent = '🖨 Cetak Struk';
+      btn.textContent = '🖨 Cetak via Bluetooth';
       btn.disabled = false;
     }, 2000);
 
-  } catch(err) {
+  } catch (err) {
     btn.textContent = '✗ Gagal — Coba Lagi';
     btn.disabled = false;
     alert('Gagal cetak: ' + err.message);
@@ -1234,14 +1328,16 @@ async function printEscPos() {
   }
 }
 
-// Set default datetime to now
+/* ══════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════ */
 const now = new Date();
 now.setSeconds(0, 0);
-const pad = n => String(n).padStart(2,'0');
-const local = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate())
-  + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes());
-document.getElementById("waktu").value = local;
-generateNota();
+const pad = n => String(n).padStart(2, '0');
+const local = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+  + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+document.getElementById('waktu').value = local;
+updateReceipt();
 
 </script>
 </body>
