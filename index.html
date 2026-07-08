@@ -389,19 +389,6 @@ body {
   font-weight: 700;
 }
 
-/* CASH / CHANGE block — stacked label above amount, right-aligned like a real printout */
-.r-cash-block {
-  text-align: right;
-  font-weight: 700;
-  font-size: 12px;
-  margin: 2px 0;
-}
-
-.r-cash-block .r-cash-label {
-  font-size: 10px;
-  letter-spacing: 0.5px;
-}
-
 .r-footer {
   text-align: center;
   font-size: 9.5px;
@@ -859,34 +846,34 @@ body {
         <hr class="r-dash">
 
         <div class="r-row">
-          <span class="r-key">Shift</span>
+          <span class="r-key">Shift :</span>
           <span class="r-val" id="r_shift">1</span>
         </div>
         <div class="r-row">
-          <span class="r-key">No. Trans</span>
+          <span class="r-key">No. Trans :</span>
           <span class="r-val" id="r_trans">1324747</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Waktu</span>
+          <span class="r-key">Waktu :</span>
           <span class="r-val" id="r_waktu">06/05/2026 10:50:17</span>
         </div>
 
         <hr class="r-dash">
 
         <div class="r-row">
-          <span class="r-key">Pulau/Pompa</span>
+          <span class="r-key">Pulau/Pompa :</span>
           <span class="r-val" id="r_pulau">1</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Operator</span>
+          <span class="r-key">Operator :</span>
           <span class="r-val" id="r_operator">-</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Jenis BBM</span>
+          <span class="r-key">Jenis BBM :</span>
           <span class="r-val" id="r_produk">-</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Volume</span>
+          <span class="r-key">Volume :</span>
           <span class="r-val" id="r_volume">0.00 L</span>
         </div>
 
@@ -894,15 +881,15 @@ body {
 
         <div class="r-section-title">Informasi Harga BBM (Rp/Liter)</div>
         <div class="r-row">
-          <span class="r-key">Harga Non Subsidi</span>
+          <span class="r-key">Harga Non Subsidi :</span>
           <span class="r-val" id="r_harga_non">0</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Subsidi Pemerintah</span>
+          <span class="r-key">Subsidi Pemerintah :</span>
           <span class="r-val" id="r_subsidi_liter">0</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Harga Jual</span>
+          <span class="r-key">Harga Jual :</span>
           <span class="r-val" id="r_harga_jual">0</span>
         </div>
 
@@ -910,33 +897,33 @@ body {
 
         <div class="r-section-title">Total Penjualan (Rp)</div>
         <div class="r-row">
-          <span class="r-key">Tanpa Subsidi</span>
+          <span class="r-key">Tanpa Subsidi :</span>
           <span class="r-val" id="r_tanpa_subsidi">0</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Subsidi Pemerintah</span>
+          <span class="r-key">Subsidi Pemerintah :</span>
           <span class="r-val" id="r_subsidi_total">0</span>
         </div>
         <div class="r-row bold">
-          <span class="r-key">Dibayar Konsumen</span>
+          <span class="r-key">Dibayar Konsumen :</span>
           <span class="r-val" id="r_dibayar">0</span>
         </div>
 
         <hr class="r-dash">
 
-        <div class="r-cash-block">
-          <div class="r-cash-label">CASH</div>
-          <div id="r_cash">0</div>
+        <div class="r-row bold">
+          <span class="r-key">CASH</span>
+          <span class="r-val" id="r_cash">0</span>
         </div>
-        <div class="r-cash-block" id="row_change" style="display:none;">
-          <div class="r-cash-label">CHANGE</div>
-          <div id="r_change">0</div>
+        <div class="r-row bold" id="row_change" style="display:none;">
+          <span class="r-key">CHANGE</span>
+          <span class="r-val" id="r_change">0</span>
         </div>
 
         <hr class="r-dash">
 
         <div class="r-row">
-          <span class="r-key">No Plat</span>
+          <span class="r-key">No Plat :</span>
           <span class="r-val" id="r_plat">-</span>
         </div>
 
@@ -1196,6 +1183,64 @@ function leftRight(left, right, width = 32) {
 
 function dashedLine(width = 32) { return '-'.repeat(width); }
 
+/* Convert an image (URL or dataURL) into ESC/POS GS v 0 raster bytes.
+   Uses a fresh Image with crossOrigin so canvas reading doesn't throw for
+   allowed sources; resolves to null (and printing simply skips the logo)
+   if the source can't be read as pixel data (e.g. blocked by CORS). */
+function imageToEscPosRaster(src, maxWidthDots = 200) {
+  return new Promise(resolve => {
+    if (!src) { resolve(null); return; }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const done = (val) => { clearTimeout(timer); resolve(val); };
+    const timer = setTimeout(() => done(null), 4000);
+
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxWidthDots / img.naturalWidth);
+        const w = Math.max(8, Math.round(img.naturalWidth * scale));
+        const h = Math.max(8, Math.round(img.naturalHeight * scale));
+        const widthBytes = Math.ceil(w / 8);
+        const canvasW = widthBytes * 8;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasW;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvasW, h);
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const pixels = ctx.getImageData(0, 0, canvasW, h).data;
+        const data = new Uint8Array(widthBytes * h);
+
+        for (let y = 0; y < h; y++) {
+          for (let xByte = 0; xByte < widthBytes; xByte++) {
+            let byte = 0;
+            for (let bit = 0; bit < 8; bit++) {
+              const x = xByte * 8 + bit;
+              let on = 0;
+              if (x < w) {
+                const idx = (y * canvasW + x) * 4;
+                const lum = pixels[idx] * 0.299 + pixels[idx + 1] * 0.587 + pixels[idx + 2] * 0.114;
+                const alpha = pixels[idx + 3];
+                on = (alpha > 10 && lum < 165) ? 1 : 0;
+              }
+              byte |= (on << (7 - bit));
+            }
+            data[y * widthBytes + xByte] = byte;
+          }
+        }
+        done({ widthBytes, height: h, data });
+      } catch (e) {
+        done(null); // canvas tainted (CORS) — skip logo, rest of receipt still prints
+      }
+    };
+    img.onerror = () => done(null);
+    img.src = src;
+  });
+}
+
 function wrapText(text, width = 32) {
   const words = text.split(' ');
   const lines = [];
@@ -1253,25 +1298,39 @@ async function printEscPos() {
     const W = 32;
     const rp = n => formatRupiah(n);
 
+    // Try to rasterize the current logo for printing (works reliably for
+    // an uploaded logo; the default remote logo may be skipped if the host
+    // doesn't allow cross-origin pixel reads — the rest of the receipt still prints).
+    const logoSrc = document.getElementById('logoImg').src;
+    const raster = await imageToEscPosRaster(logoSrc, 200);
+
     const cmds = [];
     const ESC_INIT     = [0x1B, 0x40];
     const ALIGN_CENTER = [0x1B, 0x61, 0x01];
     const ALIGN_LEFT   = [0x1B, 0x61, 0x00];
     const BOLD_ON      = [0x1B, 0x45, 0x01];
     const BOLD_OFF     = [0x1B, 0x45, 0x00];
-    const SIZE_NORMAL  = [0x1D, 0x21, 0x00];
-    const SIZE_DOUBLE  = [0x1D, 0x21, 0x11];
     const LF           = [0x0A];
     const CUT          = [0x1D, 0x56, 0x41, 0x10];
+    const GS_V0        = [0x1D, 0x76, 0x30, 0x00];
 
     const add = (...parts) => parts.forEach(p => cmds.push(...p));
     const txt = s => textToBytes(s);
     const nl  = () => add(LF);
 
     add(ESC_INIT);
+    add(ALIGN_CENTER);
+
+    // Logo (raster bit image), if available
+    if (raster) {
+      const xL = raster.widthBytes & 0xFF, xH = (raster.widthBytes >> 8) & 0xFF;
+      const yL = raster.height & 0xFF,     yH = (raster.height >> 8) & 0xFF;
+      add(GS_V0, [xL, xH, yL, yH], [...raster.data]);
+      nl();
+    }
 
     // Header SPBU
-    add(ALIGN_CENTER, BOLD_ON);
+    add(BOLD_ON);
     add(txt(spbu_id)); nl();
     add(txt(spbu_nama)); nl();
     add(BOLD_OFF);
@@ -1282,8 +1341,8 @@ async function printEscPos() {
     add(txt(dashedLine(W))); nl();
 
     // Transaksi
-    add(txt(leftRight('Shift: ' + shift, 'No.Trans: ' + trans, W))); nl();
-    add(txt('Waktu: ' + waktuStr)); nl();
+    add(txt(leftRight('Shift : ' + shift, 'No. Trans: ' + trans, W))); nl();
+    add(txt('Waktu : ' + waktuStr)); nl();
     add(txt(dashedLine(W))); nl();
 
     // Produk
@@ -1297,31 +1356,29 @@ async function printEscPos() {
     add(ALIGN_CENTER, BOLD_ON);
     add(txt('INFO HARGA BBM (Rp/L)')); nl();
     add(BOLD_OFF, ALIGN_LEFT);
-    add(txt(leftRight('Harga Non Subsidi', rp(calc.hargaNonSubsidi), W))); nl();
-    add(txt(leftRight('Subsidi Pemerintah', rp(calc.subsidiPerLiter), W))); nl();
-    add(txt(leftRight('Harga Jual', rp(calc.hargaJual), W))); nl();
+    add(txt(leftRight('Harga Non Subsidi', ': ' + rp(calc.hargaNonSubsidi), W))); nl();
+    add(txt(leftRight('Subsidi Pemerintah', ': ' + rp(calc.subsidiPerLiter), W))); nl();
+    add(txt(leftRight('Harga Jual', ': ' + rp(calc.hargaJual), W))); nl();
     add(txt(dashedLine(W))); nl();
 
     // Total penjualan
     add(ALIGN_CENTER, BOLD_ON);
     add(txt('TOTAL PENJUALAN (Rp)')); nl();
     add(BOLD_OFF, ALIGN_LEFT);
-    add(txt(leftRight('Tanpa Subsidi', rp(calc.tanpaSubsidi), W))); nl();
-    add(txt(leftRight('Subsidi Pemerintah', rp(calc.subsidiTotal), W))); nl();
+    add(txt(leftRight('Tanpa Subsidi', ': ' + rp(calc.tanpaSubsidi), W))); nl();
+    add(txt(leftRight('Subsidi Pemerintah', ': ' + rp(calc.subsidiTotal), W))); nl();
     add(BOLD_ON);
-    add(txt(leftRight('Dibayar Konsumen', rp(calc.dibayarKonsumen), W))); nl();
+    add(txt(leftRight('Dibayar Konsumen', ': ' + rp(calc.dibayarKonsumen), W))); nl();
     add(BOLD_OFF);
     add(txt(dashedLine(W))); nl();
 
-    // Cash / Change
-    add(BOLD_ON, SIZE_DOUBLE);
-    add(txt('CASH')); nl();
-    add(txt(rp(calc.cash))); nl();
+    // Cash / Change — single line, right-aligned, normal size (matches real receipt)
+    add(BOLD_ON);
+    add(txt(leftRight('CASH', rp(calc.cash), W))); nl();
     if (calc.showChange) {
-      add(txt('CHANGE')); nl();
-      add(txt(rp(calc.change))); nl();
+      add(txt(leftRight('CHANGE', rp(calc.change), W))); nl();
     }
-    add(SIZE_NORMAL, BOLD_OFF);
+    add(BOLD_OFF);
     add(txt(dashedLine(W))); nl();
 
     // Plat
