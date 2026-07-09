@@ -369,19 +369,33 @@ body {
   letter-spacing: 0.2px;
 }
 
+/* Default row: fixed-width label column so colons line up in a column,
+   value follows directly after (NOT pushed to the paper's right edge) —
+   matches the real Pertamina receipt's alignment. */
 .r-row {
   display: flex;
-  justify-content: space-between;
-  gap: 6px;
+  gap: 2px;
 }
 
 .r-key {
   white-space: nowrap;
+  min-width: 20ch;
+  flex-shrink: 0;
 }
 
 .r-val {
-  text-align: right;
+  text-align: left;
   word-break: break-word;
+}
+
+/* CASH / CHANGE use the paper's full width, value flush right */
+.r-row.r-right {
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.r-row.r-right .r-val {
+  text-align: right;
 }
 
 .r-row.bold .r-key,
@@ -850,11 +864,11 @@ body {
           <span class="r-val" id="r_shift">1</span>
         </div>
         <div class="r-row">
-          <span class="r-key">No. Trans :</span>
+          <span class="r-key">No. Trans:</span>
           <span class="r-val" id="r_trans">1324747</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Waktu :</span>
+          <span class="r-key">Waktu:</span>
           <span class="r-val" id="r_waktu">06/05/2026 10:50:17</span>
         </div>
 
@@ -874,7 +888,7 @@ body {
         </div>
         <div class="r-row">
           <span class="r-key">Volume :</span>
-          <span class="r-val" id="r_volume">0.00 L</span>
+          <span class="r-val" id="r_volume">0.00 liter</span>
         </div>
 
         <hr class="r-dash">
@@ -911,11 +925,11 @@ body {
 
         <hr class="r-dash">
 
-        <div class="r-row bold">
+        <div class="r-row r-right bold">
           <span class="r-key">CASH</span>
           <span class="r-val" id="r_cash">0</span>
         </div>
-        <div class="r-row bold" id="row_change" style="display:none;">
+        <div class="r-row r-right bold" id="row_change" style="display:none;">
           <span class="r-key">CHANGE</span>
           <span class="r-val" id="r_change">0</span>
         </div>
@@ -998,7 +1012,13 @@ function updateReceipt() {
   set('r_spbu_nama',   document.getElementById('spbu_nama').value   || '-');
   set('r_spbu_alamat', document.getElementById('spbu_alamat').value || '-');
   const telp = document.getElementById('spbu_telp').value;
-  set('r_spbu_telp', telp ? 'Telp. ' + telp : 'Telp. -');
+  const telpEl = document.getElementById('r_spbu_telp');
+  if (telp) {
+    telpEl.textContent = 'Telp. ' + telp;
+    telpEl.style.display = '';
+  } else {
+    telpEl.style.display = 'none';
+  }
 
   // Transaksi
   set('r_shift', document.getElementById('shift').value || '-');
@@ -1009,7 +1029,7 @@ function updateReceipt() {
   set('r_pulau',    document.getElementById('pulau').value    || '-');
   set('r_operator', document.getElementById('operator').value || '-');
   set('r_produk',   document.getElementById('produk').value   || '-');
-  set('r_volume',   calc.volume.toFixed(2) + ' L');
+  set('r_volume',   calc.volume.toFixed(2) + ' liter');
 
   // Informasi harga BBM
   set('r_harga_non',      formatRupiah(calc.hargaNonSubsidi));
@@ -1183,6 +1203,12 @@ function leftRight(left, right, width = 32) {
 
 function dashedLine(width = 32) { return '-'.repeat(width); }
 
+/* Fixed-width label column so the colon lines up the same way it does on
+   the real Pertamina receipt — NOT right-justified to the paper edge. */
+function labelColon(label, value, labelWidth = 19) {
+  return label.padEnd(labelWidth, ' ') + ': ' + value;
+}
+
 /* Convert an image (URL or dataURL) into ESC/POS GS v 0 raster bytes.
    Uses a fresh Image with crossOrigin so canvas reading doesn't throw for
    allowed sources; resolves to null (and printing simply skips the logo)
@@ -1282,7 +1308,7 @@ async function printEscPos() {
     const spbu_id     = document.getElementById('spbu_id').value     || '-';
     const spbu_nama   = document.getElementById('spbu_nama').value   || '-';
     const spbu_alamat = document.getElementById('spbu_alamat').value || '-';
-    const spbu_telp   = document.getElementById('spbu_telp').value   || '-';
+    const spbu_telp   = document.getElementById('spbu_telp').value   || '';
     const shift       = document.getElementById('shift').value       || '-';
     const trans       = document.getElementById('trans').value       || '-';
     const pulau       = document.getElementById('pulau').value       || '-';
@@ -1335,40 +1361,40 @@ async function printEscPos() {
     add(txt(spbu_nama)); nl();
     add(BOLD_OFF);
     add(txt(spbu_alamat)); nl();
-    add(txt('Telp. ' + spbu_telp)); nl();
+    if (spbu_telp) { add(txt('Telp. ' + spbu_telp)); nl(); }
 
     add(ALIGN_LEFT);
     add(txt(dashedLine(W))); nl();
 
     // Transaksi
     add(txt(leftRight('Shift : ' + shift, 'No. Trans: ' + trans, W))); nl();
-    add(txt('Waktu : ' + waktuStr)); nl();
+    add(txt('Waktu: ' + waktuStr)); nl();
     add(txt(dashedLine(W))); nl();
 
     // Produk
-    add(txt(leftRight('Pulau/Pompa', ': ' + pulau, W))); nl();
-    add(txt(leftRight('Operator', ': ' + operator, W))); nl();
-    add(txt(leftRight('Jenis BBM', ': ' + produk, W))); nl();
-    add(txt(leftRight('Volume', ': ' + calc.volume.toFixed(2) + ' L', W))); nl();
+    add(txt(labelColon('Pulau/Pompa', pulau))); nl();
+    add(txt(labelColon('Operator', operator))); nl();
+    add(txt(labelColon('Jenis BBM', produk))); nl();
+    add(txt(labelColon('Volume', calc.volume.toFixed(2) + ' liter'))); nl();
     add(txt(dashedLine(W))); nl();
 
     // Informasi harga
     add(ALIGN_CENTER, BOLD_ON);
     add(txt('INFO HARGA BBM (Rp/L)')); nl();
     add(BOLD_OFF, ALIGN_LEFT);
-    add(txt(leftRight('Harga Non Subsidi', ': ' + rp(calc.hargaNonSubsidi), W))); nl();
-    add(txt(leftRight('Subsidi Pemerintah', ': ' + rp(calc.subsidiPerLiter), W))); nl();
-    add(txt(leftRight('Harga Jual', ': ' + rp(calc.hargaJual), W))); nl();
+    add(txt(labelColon('Harga Non Subsidi', rp(calc.hargaNonSubsidi)))); nl();
+    add(txt(labelColon('Subsidi Pemerintah', rp(calc.subsidiPerLiter)))); nl();
+    add(txt(labelColon('Harga Jual', rp(calc.hargaJual)))); nl();
     add(txt(dashedLine(W))); nl();
 
     // Total penjualan
     add(ALIGN_CENTER, BOLD_ON);
     add(txt('TOTAL PENJUALAN (Rp)')); nl();
     add(BOLD_OFF, ALIGN_LEFT);
-    add(txt(leftRight('Tanpa Subsidi', ': ' + rp(calc.tanpaSubsidi), W))); nl();
-    add(txt(leftRight('Subsidi Pemerintah', ': ' + rp(calc.subsidiTotal), W))); nl();
+    add(txt(labelColon('Tanpa Subsidi', rp(calc.tanpaSubsidi)))); nl();
+    add(txt(labelColon('Subsidi Pemerintah', rp(calc.subsidiTotal)))); nl();
     add(BOLD_ON);
-    add(txt(leftRight('Dibayar Konsumen', ': ' + rp(calc.dibayarKonsumen), W))); nl();
+    add(txt(labelColon('Dibayar Konsumen', rp(calc.dibayarKonsumen)))); nl();
     add(BOLD_OFF);
     add(txt(dashedLine(W))); nl();
 
@@ -1382,7 +1408,7 @@ async function printEscPos() {
     add(txt(dashedLine(W))); nl();
 
     // Plat
-    add(txt(leftRight('No Plat', ': ' + plat, W))); nl();
+    add(txt(labelColon('No Plat', plat))); nl();
     add(txt(dashedLine(W))); nl();
 
     // Footer
