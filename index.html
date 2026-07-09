@@ -1050,7 +1050,6 @@ function updateReceipt() {
   set('r_plat', document.getElementById('plat').value || '-');
   const subsidyLine = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
     ' (Perhitungan Subsidi Unaudited atau Estimasi). Gunakan BBM Subsidi secara bijak.';
-  set('r_footer', subsidyLine + '\n\nTERIMA KASIH\nATAS KUNJUNGAN\nKE SPBU KAMI');
 
   // Stats
   set('s_volume', calc.volume.toFixed(2));
