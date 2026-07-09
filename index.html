@@ -776,6 +776,8 @@ body {
         <label>No. Plat Kendaraan</label>
         <input type="text" id="plat" placeholder="cth: BM 1234 AB" oninput="updateReceipt()">
       </div>
+    </div>
+
     <div class="btn-group">
       <button class="btn btn-primary" onclick="updateReceipt()">
         ↻ Refresh
@@ -857,11 +859,11 @@ body {
           <span class="r-val" id="r_shift">1</span>
         </div>
         <div class="r-row">
-          <span class="r-key">No. Trans:</span>
+          <span class="r-key">No. Trans :</span>
           <span class="r-val" id="r_trans">1324747</span>
         </div>
         <div class="r-row">
-          <span class="r-key">Waktu:</span>
+          <span class="r-key">Waktu :</span>
           <span class="r-val" id="r_waktu">06/05/2026 10:50:17</span>
         </div>
 
@@ -930,13 +932,17 @@ body {
         <hr class="r-dash">
 
         <div class="r-row">
-          <span class="r-key">No Plat :</span>
+          <span class="r-key">No. Plat :</span>
           <span class="r-val" id="r_plat">-</span>
         </div>
 
         <hr class="r-dash">
 
-       Anda mendapat subsidi dari Pemerintah sebesar Rp 0 (Perhitungan Subsidi Unaudited atau Estimasi), Gunakan BBM Subsidi secara bijak.</div>
+        <div class="r-footer" id="r_footer">Anda mendapat subsidi dari Pemerintah sebesar Rp 0 (Perhitungan Subsidi Unaudited atau Estimasi). Gunakan BBM Subsidi secara bijak.
+
+TERIMA KASIH
+ATAS KUNJUNGAN
+KE SPBU KAMI</div>
 
       </div>
     </div>
@@ -1043,12 +1049,11 @@ function updateReceipt() {
     changeRow.style.display = 'none';
   }
 
-  // Plat & footer
+  // Plat & footer (fixed text, matches the real Pertamina receipt)
   set('r_plat', document.getElementById('plat').value || '-');
-  const footerLine1 = document.getElementById('footer_msg').value || 'Terima kasih atas kunjungan Anda';
-  const footerLine2 = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
-    ' (Perhitungan Subsidi Unaudited atau Estimasi), Gunakan BBM Subsidi secara bijak.';
-  set('r_footer', footerLine1 + '\n' + footerLine2);
+  const subsidyLine = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
+    ' (Perhitungan Subsidi Unaudited atau Estimasi). Gunakan BBM Subsidi secara bijak.';
+  set('r_footer', subsidyLine + '\n\nTERIMA KASIH\nATAS KUNJUNGAN\nKE SPBU KAMI');
 
   // Stats
   set('s_volume', calc.volume.toFixed(2));
@@ -1307,12 +1312,11 @@ async function printEscPos() {
     const operator    = document.getElementById('operator').value    || '-';
     const produk      = document.getElementById('produk').value      || '-';
     const plat        = document.getElementById('plat').value        || '-';
-    const footerLine1 = document.getElementById('footer_msg').value  || 'Terima kasih atas kunjungan Anda';
     const waktuStr    = formatWaktu(document.getElementById('waktu').value);
 
     const calc = calculatePrice();
-    const footerLine2 = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
-      ' (Perhitungan Subsidi Unaudited atau Estimasi), Gunakan BBM Subsidi secara bijak.';
+    const subsidyLine = 'Anda mendapat subsidi dari Pemerintah sebesar Rp ' + formatRupiah(calc.subsidiTotal) +
+      ' (Perhitungan Subsidi Unaudited atau Estimasi). Gunakan BBM Subsidi secara bijak.';
     const W = 32;
     const rp = n => formatRupiah(n);
 
@@ -1400,13 +1404,16 @@ async function printEscPos() {
     add(txt(dashedLine(W))); nl();
 
     // Plat
-    add(txt(labelColon('No Plat', plat))); nl();
+    add(txt(labelColon('No. Plat', plat))); nl();
     add(txt(dashedLine(W))); nl();
 
-    // Footer
+    // Footer — fixed text, matches the real Pertamina receipt
     add(ALIGN_CENTER);
-    wrapText(footerLine1, W).forEach(line => { add(txt(line)); nl(); });
-    wrapText(footerLine2, W).forEach(line => { add(txt(line)); nl(); });
+    wrapText(subsidyLine, W).forEach(line => { add(txt(line)); nl(); });
+    nl();
+    add(txt('TERIMA KASIH')); nl();
+    add(txt('ATAS KUNJUNGAN')); nl();
+    add(txt('KE SPBU KAMI')); nl();
 
     nl(); nl(); nl();
     add(CUT);
